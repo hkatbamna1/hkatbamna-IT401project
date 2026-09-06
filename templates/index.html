@@ -1,11 +1,62 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>IT401 Project</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>It works!</h1>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Encore — Find your next live show{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow"><span></span> Live music, picked for you</p>
+        <h1>Your next favorite<br>night starts <em>here.</em></h1>
+        <p class="hero-intro">Discover concerts happening nearby, from artists you love to sounds you haven't met yet.</p>
+        <form class="discovery-form" action="#shows" method="get">
+            <label class="form-field">
+                <span>Where</span>
+                <span class="input-row">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-13A7 7 0 0 0 5 8c0 6.8 7 13 7 13Zm0-10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>
+                    <input type="text" name="location" placeholder="City or ZIP code" aria-label="City or ZIP code">
+                </span>
+            </label>
+            <label class="form-field">
+                <span>What</span>
+                <span class="input-row">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13M9 9l11-2M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm11-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+                    <select name="genre" aria-label="Music genre">
+                        <option value="">Any genre</option><option>Alternative</option><option>Electronic</option><option>Hip-hop</option><option>Indie</option><option>Jazz</option><option>Pop</option><option>Rock</option>
+                    </select>
+                </span>
+            </label>
+            <button type="submit">Find concerts <span aria-hidden="true">&#8594;</span></button>
+        </form>
+        <div class="trust-row"><span>Curated for your taste</span><span>Local shows, all in one place</span><span>New picks every week</span></div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+        <div class="record record-back"></div>
+        <div class="poster-card"><p>Tonight</p><strong>FEEL<br>THE<br>FREQUENCY</strong><span>LIVE / LOCAL / LOUD</span></div>
+        <div class="record record-front"></div><span class="spark spark-one">✦</span><span class="spark spark-two">✦</span>
+    </div>
+</section>
+<section class="shows-section" id="shows">
+    <div class="section-heading">
+        <div><p class="eyebrow"><span></span> Happening near you</p><h2>Shows worth leaving<br>the house for.</h2></div>
+        <a href="#shows">View all shows <span aria-hidden="true">&#8594;</span></a>
+    </div>
+    <div class="concert-grid">
+        <article class="concert-card card-violet">
+            <div class="card-visual"><span class="date-badge"><strong>12</strong> SEP</span><span class="genre-tag">Indie</span><div class="visual-shape shape-orbit"></div></div>
+            <div class="card-content"><p>FRI · 8:00 PM</p><h3>Neon Palms</h3><span>The Observatory · Santa Ana</span><a href="#">See the show <span aria-hidden="true">&#8594;</span></a></div>
+        </article>
+        <article class="concert-card card-coral">
+            <div class="card-visual"><span class="date-badge"><strong>18</strong> SEP</span><span class="genre-tag">Electronic</span><div class="visual-shape shape-wave"></div></div>
+            <div class="card-content"><p>THU · 9:30 PM</p><h3>After Hours</h3><span>The Echo · Los Angeles</span><a href="#">See the show <span aria-hidden="true">&#8594;</span></a></div>
+        </article>
+        <article class="concert-card card-lime">
+            <div class="card-visual"><span class="date-badge"><strong>27</strong> SEP</span><span class="genre-tag">Alternative</span><div class="visual-shape shape-burst"></div></div>
+            <div class="card-content"><p>SAT · 7:00 PM</p><h3>The Wild Ones</h3><span>House of Blues · Anaheim</span><a href="#">See the show <span aria-hidden="true">&#8594;</span></a></div>
+        </article>
+    </div>
+</section>
+<section class="recommendation-banner">
+    <p class="eyebrow light"><span></span> Your taste, amplified</p>
+    <h2>Not sure what to see?<br><em>Let us pick.</em></h2>
+    <p>Tell us a few artists you love and we'll surface nearby shows that sound like you.</p>
+    <a class="button-light" href="{{ url_for('about') }}">How Encore works <span aria-hidden="true">&#8594;</span></a>
+</section>
+{% endblock %}

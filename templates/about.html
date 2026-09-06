@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}About — Encore{% endblock %}
+{% block content %}
+<section class="about-hero">
+    <p class="eyebrow"><span></span> Why we built Encore</p>
+    <h1>Great music is closer<br>than you <em>think.</em></h1>
+    <p class="about-lead">Encore makes finding your next live show feel exciting, personal, and effortless.</p>
+</section>
+<section class="about-story">
+    <div class="story-statement">
+        <span class="big-number">01</span>
+        <h2>We connect people with the live music happening around them.</h2>
+    </div>
+    <div class="story-copy">
+        <p>Concert discovery can feel fragmented. The artists you follow are in one app, venue calendars are in another, and the perfect small show can slip by unnoticed.</p>
+        <p>Encore brings nearby concerts together and turns them into recommendations shaped by your location and music taste. Whether you want a high-energy Friday night or an intimate set from someone new, we help you find a show worth remembering.</p>
+    </div>
+</section>
+<section class="how-section">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow"><span></span> Simple by design</p>
+            <h2>From curious<br>to front row.</h2>
+        </div>
+    </div>
+    <div class="steps-grid">
+        <article><span>01</span><div class="step-icon">⌖</div><h3>Set your scene</h3><p>Choose your city, how far you'll travel, and the kinds of music that move you.</p></article>
+        <article><span>02</span><div class="step-icon">♪</div><h3>Meet your matches</h3><p>Explore nearby concerts ranked around your taste—not whoever paid for the top spot.</p></article>
+        <article><span>03</span><div class="step-icon">↗</div><h3>Go make a memory</h3><p>Pick a show, invite your people, and spend less time searching and more time listening.</p></article>
+    </div>
+</section>
+<section class="values-section">
+    <p class="eyebrow light"><span></span> What matters to us</p>
+    <div class="values-grid">
+        <h2>Local scenes.<br>New sounds.<br><em>Real connection.</em></h2>
+        <div>
+            <p>We believe music is best experienced together. Our goal is to make local stages easier to discover, help artists meet new listeners, and give every night out the chance to become a story.</p>
+            <a class="button-light" href="{{ url_for('index') }}">Find your next show <span aria-hidden="true">&#8594;</span></a>
+        </div>
+    </div>
+</section>
+{% endblock %}

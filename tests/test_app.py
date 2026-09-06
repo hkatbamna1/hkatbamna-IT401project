@@ -14,3 +14,10 @@ def client():
 def test_index(client):
     response = client.get("/")
     assert response.status_code == 200
+    assert b"Your next favorite" in response.data
+
+
+def test_about(client):
+    response = client.get("/about")
+    assert response.status_code == 200
+    assert b"Great music is closer" in response.data

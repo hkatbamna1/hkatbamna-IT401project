@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Encore helps you discover nearby concerts and find your next favorite live show.">
+    <title>{% block title %}Encore{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="{{ url_for('index') }}" aria-label="Encore home">
+            <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            <span>ENCORE</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+            <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>Discover</a>
+            <a href="{{ url_for('about') }}" {% if request.endpoint == 'about' %}aria-current="page"{% endif %}>About</a>
+        </nav>
+    </header>
+    <main>{% block content %}{% endblock %}</main>
+    <footer class="site-footer">
+        <a class="brand brand-small" href="{{ url_for('index') }}">ENCORE</a>
+        <p>Less scrolling. More live music.</p>
+        <p>&copy; 2026 Encore</p>
+    </footer>
+</body>
+</html>
