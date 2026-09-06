@@ -146,6 +146,7 @@ python -m pytest
 
 > docs/screenshots/about.png
 
+Screenshots are also available in screenshots.pdf
 
 ## Future Work for Assignment 2
 
