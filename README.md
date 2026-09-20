@@ -30,8 +30,8 @@ This is a preliminary concept and may be refined after Module 2 as available API
 - **About page:** Explains the application's purpose and the intended concert-discovery experience.
 - **Responsive presentation:** Custom styling in `static/style.css` supports the application's visual identity and page layouts.
 - **Automated route tests:** Pytest checks that the Home and About routes respond successfully and contain their expected content.
-- **JSON data display:** Not yet implemented. A future Explore page will load concert records from a JSON file in `data/`.
-- **Filtering functionality:** The homepage currently presents location and genre controls, but server-side filtering is not yet implemented. This will be connected to the JSON-backed Explore page.
+- **Live event search:** The homepage searches Ticketmaster Discovery API events by artist, venue, city, or ZIP/postal code.
+- **Combined filtering:** Artist and venue names are resolved to Ticketmaster IDs before event filters are combined for accurate results.
 
 ## Information Model (Conceptual)
 
@@ -122,11 +122,17 @@ Configuration is defined in `config.py` and supports the following environment v
 | Variable | Description |
 | --- | --- |
 | `SECRET_KEY` | Flask secret key |
-| `API_KEY` | Key for a future external event API |
+| `TICKETMASTER_API_KEY` | Ticketmaster Discovery API consumer key |
 | `AI_SERVICE_API_KEY` | Key for a future AI service integration |
 | `FLASK_ENV` | Application configuration: `development` or `production` |
 
 Never commit real API keys or other secrets to the repository.
+
+Copy your Ticketmaster consumer key into the local `.env` file:
+
+```dotenv
+TICKETMASTER_API_KEY=your_key_here
+```
 
 ## Testing
 

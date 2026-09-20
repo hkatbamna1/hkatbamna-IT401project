@@ -5,27 +5,32 @@
     <div class="hero-copy">
         <p class="eyebrow"><span></span> Live music, picked for you</p>
         <h1>Your next favorite<br>night starts <em>here.</em></h1>
-        <p class="hero-intro">Discover concerts happening nearby, from artists you love to sounds you haven't met yet.</p>
-        <form class="discovery-form" action="#shows" method="get">
+        <p class="hero-intro">Search real Ticketmaster events by artist, venue, or location and find your next live show.</p>
+        <form class="discovery-form" action="{{ url_for('index') }}#shows" method="get">
             <label class="form-field">
-                <span>Where</span>
+                <span>Artist</span>
                 <span class="input-row">
-                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-13A7 7 0 0 0 5 8c0 6.8 7 13 7 13Zm0-10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>
-                    <input type="text" name="location" placeholder="City or ZIP code" aria-label="City or ZIP code">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13M9 9l11-2M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm11-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
+                    <input type="text" name="artist" value="{{ artist }}" placeholder="e.g. Hozier" aria-label="Artist name">
                 </span>
             </label>
             <label class="form-field">
-                <span>What</span>
+                <span>Venue</span>
                 <span class="input-row">
-                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13M9 9l11-2M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm11-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
-                    <select name="genre" aria-label="Music genre">
-                        <option value="">Any genre</option><option>Alternative</option><option>Electronic</option><option>Hip-hop</option><option>Indie</option><option>Jazz</option><option>Pop</option><option>Rock</option>
-                    </select>
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13h-5v-6H9v6H4Zm3-10h2V9H7v2Zm4 0h2V9h-2v2Zm4 0h2V9h-2v2Z"/></svg>
+                    <input type="text" name="venue" value="{{ venue }}" placeholder="e.g. The Wiltern" aria-label="Venue name">
+                </span>
+            </label>
+            <label class="form-field">
+                <span>Location</span>
+                <span class="input-row">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-13A7 7 0 0 0 5 8c0 6.8 7 13 7 13Zm0-10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>
+                    <input type="text" name="location" value="{{ location }}" placeholder="City or ZIP code" aria-label="City or ZIP code">
                 </span>
             </label>
             <button type="submit">Find concerts <span aria-hidden="true">&#8594;</span></button>
         </form>
-        <div class="trust-row"><span>Curated for your taste</span><span>Local shows, all in one place</span><span>New picks every week</span></div>
+        <div class="trust-row"><span>Live Ticketmaster listings</span><span>Search one field or combine them</span><span>Sorted by upcoming date</span></div>
     </div>
     <div class="hero-art" aria-hidden="true">
         <div class="record record-back"></div>
@@ -35,28 +40,47 @@
 </section>
 <section class="shows-section" id="shows">
     <div class="section-heading">
-        <div><p class="eyebrow"><span></span> Happening near you</p><h2>Shows worth leaving<br>the house for.</h2></div>
-        <a href="#shows">View all shows <span aria-hidden="true">&#8594;</span></a>
+        <div>
+            <p class="eyebrow"><span></span>{% if searched %} Search results{% else %} Start exploring{% endif %}</p>
+            <h2>{% if searched %}Shows worth leaving<br>the house for.{% else %}Find a show<br>made for you.{% endif %}</h2>
+        </div>
+        {% if events %}<span class="result-count">{{ events|length }} event{% if events|length != 1 %}s{% endif %} found</span>{% endif %}
     </div>
+
+    {% if error %}
+        <div class="search-message search-error" role="alert"><strong>Search unavailable.</strong> {{ error }}</div>
+    {% elif searched and not events %}
+        <div class="search-message"><strong>No concerts found.</strong> Try a broader artist or venue name, or search a nearby city.</div>
+    {% elif not searched %}
+        <div class="search-message"><strong>Ready when you are.</strong> Enter an artist, venue, location—or combine all three—to see upcoming concerts.</div>
+    {% endif %}
+
+    {% if events %}
     <div class="concert-grid">
-        <article class="concert-card card-violet">
-            <div class="card-visual"><span class="date-badge"><strong>12</strong> SEP</span><span class="genre-tag">Indie</span><div class="visual-shape shape-orbit"></div></div>
-            <div class="card-content"><p>FRI · 8:00 PM</p><h3>Neon Palms</h3><span>The Observatory · Santa Ana</span><a href="#">See the show <span aria-hidden="true">&#8594;</span></a></div>
+        {% for event in events %}
+        <article class="concert-card card-{{ loop.cycle('violet', 'coral', 'lime') }}">
+            <div class="card-visual{% if event.image %} has-image{% endif %}">
+                {% if event.image %}<img class="card-image" src="{{ event.image }}" alt="{{ event.image_alt }}" loading="lazy">{% endif %}
+                <span class="date-badge"><strong>{{ event.date_day }}</strong> {{ event.date_month }}</span>
+                <span class="genre-tag">{{ event.genre }}</span>
+                {% if not event.image %}<div class="visual-shape shape-orbit"></div>{% endif %}
+            </div>
+            <div class="card-content">
+                <p>{{ event.date_label }} · {{ event.time_label }}</p>
+                <h3>{{ event.name }}</h3>
+                {% if event.artist and event.artist != event.name %}<span class="event-artist">{{ event.artist }}</span>{% endif %}
+                <span>{{ event.venue }}{% if event.location %} · {{ event.location }}{% endif %}</span>
+                {% if event.url %}<a href="{{ event.url }}" target="_blank" rel="noopener noreferrer">See on Ticketmaster <span aria-hidden="true">&#8594;</span></a>{% endif %}
+            </div>
         </article>
-        <article class="concert-card card-coral">
-            <div class="card-visual"><span class="date-badge"><strong>18</strong> SEP</span><span class="genre-tag">Electronic</span><div class="visual-shape shape-wave"></div></div>
-            <div class="card-content"><p>THU · 9:30 PM</p><h3>After Hours</h3><span>The Echo · Los Angeles</span><a href="#">See the show <span aria-hidden="true">&#8594;</span></a></div>
-        </article>
-        <article class="concert-card card-lime">
-            <div class="card-visual"><span class="date-badge"><strong>27</strong> SEP</span><span class="genre-tag">Alternative</span><div class="visual-shape shape-burst"></div></div>
-            <div class="card-content"><p>SAT · 7:00 PM</p><h3>The Wild Ones</h3><span>House of Blues · Anaheim</span><a href="#">See the show <span aria-hidden="true">&#8594;</span></a></div>
-        </article>
+        {% endfor %}
     </div>
+    {% endif %}
 </section>
 <section class="recommendation-banner">
     <p class="eyebrow light"><span></span> Your taste, amplified</p>
-    <h2>Not sure what to see?<br><em>Let us pick.</em></h2>
-    <p>Tell us a few artists you love and we'll surface nearby shows that sound like you.</p>
+    <h2>Search less.<br><em>Hear more.</em></h2>
+    <p>Combine an artist you love with a city or favorite venue to narrow in on the right night out.</p>
     <a class="button-light" href="{{ url_for('about') }}">How Encore works <span aria-hidden="true">&#8594;</span></a>
 </section>
 {% endblock %}
