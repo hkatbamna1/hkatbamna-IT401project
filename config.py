@@ -12,7 +12,8 @@ class Config:
     DATA_DIR = os.path.join(BASE_DIR, "data")
 
     # External API keys / service config
-    TICKETMASTER_API_KEY = os.environ.get("TICKETMASTER_API_KEY")
+    JAMBASE_API_KEY = os.environ.get("JAMBASE_API_KEY")
+    SETLISTFM_API_KEY = os.environ.get("SETLISTFM_API_KEY")
     AI_SERVICE_API_KEY = os.environ.get("AI_SERVICE_API_KEY")
 
 

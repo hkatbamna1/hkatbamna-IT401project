@@ -1,0 +1,29 @@
+{% for event in result_events %}
+<article class="concert-card card-{{ loop.cycle('violet', 'coral', 'lime') }}">
+    <div class="card-visual{% if event.image %} has-image{% endif %}">
+        {% if event.image %}<img class="card-image" src="{{ event.image }}" alt="{{ event.image_alt }}" loading="lazy">{% endif %}
+        <span class="date-badge"><strong>{{ event.date_day }}</strong> {{ event.date_month }}</span>
+        <span class="genre-tag">{{ event.genre }}</span>
+        {% if not event.image %}<div class="visual-shape shape-orbit"></div>{% endif %}
+    </div>
+    <div class="card-content">
+        <p>{{ event.date_label }} · {{ event.time_label }}</p>
+        <span class="source-badge source-{{ event.source }}">{{ event.source_label }}</span>
+        {% if event.status %}<span class="status-badge">{{ event.status }}</span>{% endif %}
+        <h3>{{ event.name }}</h3>
+        {% if event.artist and event.artist != event.name %}<span class="event-artist">{{ event.artist }}</span>{% endif %}
+        {% if event.tour %}<span class="event-tour"><strong>Tour:</strong> {{ event.tour }}</span>{% endif %}
+        {% if event.supporting_artists %}
+        <div class="lineup-summary">
+            <strong>{{ event.supporting_label }}</strong>
+            {{ event.supporting_artists|join(', ') }}{% if event.additional_artist_count %}<span> +{{ event.additional_artist_count }} more</span>{% endif %}
+        </div>
+        {% endif %}
+        <span>{{ event.venue }}{% if event.location %} · {{ event.location }}{% endif %}</span>
+        <div class="card-links">
+            {% if event.url %}<a href="{{ event.url }}" target="_blank" rel="noopener noreferrer">{{ event.link_label }} <span aria-hidden="true">&#8594;</span></a>{% endif %}
+            {% if event.ticket_url %}<a href="{{ event.ticket_url }}" target="_blank" rel="noopener noreferrer">Tickets <span aria-hidden="true">&#8599;</span></a>{% endif %}
+        </div>
+    </div>
+</article>
+{% endfor %}

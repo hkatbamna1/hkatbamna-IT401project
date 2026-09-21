@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Encore — Find your next live show{% endblock %}
 {% block content %}
-<section class="hero">
+<section class="hero{% if searched %} hero-search-results{% endif %}">
     <div class="hero-copy">
         <p class="eyebrow"><span></span> Live music, picked for you</p>
         <h1>Your next favorite<br>night starts <em>here.</em></h1>
-        <p class="hero-intro">Search real Ticketmaster events by artist, venue, or location and find your next live show.</p>
+        <p class="hero-intro">Find upcoming concerts with JamBase and revisit past performances from Setlist.fm.</p>
         <form class="discovery-form" action="{{ url_for('index') }}#shows" method="get">
             <label class="form-field">
                 <span>Artist</span>
@@ -25,12 +25,12 @@
                 <span>Location</span>
                 <span class="input-row">
                     <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-13A7 7 0 0 0 5 8c0 6.8 7 13 7 13Zm0-10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>
-                    <input type="text" name="location" value="{{ location }}" placeholder="City or ZIP code" aria-label="City or ZIP code">
+                    <input type="text" name="location" value="{{ location }}" placeholder="City or City, ST" aria-label="City and optional state code">
                 </span>
             </label>
             <button type="submit">Find concerts <span aria-hidden="true">&#8594;</span></button>
         </form>
-        <div class="trust-row"><span>Live Ticketmaster listings</span><span>Search one field or combine them</span><span>Sorted by upcoming date</span></div>
+        <div class="trust-row"><span>JamBase + Setlist.fm</span><span>Artists, venues, and cities</span><span>Upcoming and past shows</span></div>
     </div>
     <div class="hero-art" aria-hidden="true">
         <div class="record record-back"></div>
@@ -38,43 +38,77 @@
         <div class="record record-front"></div><span class="spark spark-one">✦</span><span class="spark spark-two">✦</span>
     </div>
 </section>
-<section class="shows-section" id="shows">
+<section class="shows-section{% if searched %} search-results-active{% endif %}" id="shows">
     <div class="section-heading">
         <div>
             <p class="eyebrow"><span></span>{% if searched %} Search results{% else %} Start exploring{% endif %}</p>
-            <h2>{% if searched %}Shows worth leaving<br>the house for.{% else %}Find a show<br>made for you.{% endif %}</h2>
+            <h2>{% if searched %}Concerts matching your search.{% else %}Find a show<br>made for you.{% endif %}</h2>
         </div>
-        {% if events %}<span class="result-count">{{ events|length }} event{% if events|length != 1 %}s{% endif %} found</span>{% endif %}
+        {% if events or past_events %}<span class="result-count">Upcoming and past concerts</span>{% endif %}
     </div>
 
-    {% if error %}
-        <div class="search-message search-error" role="alert"><strong>Search unavailable.</strong> {{ error }}</div>
-    {% elif searched and not events %}
-        <div class="search-message"><strong>No concerts found.</strong> Try a broader artist or venue name, or search a nearby city.</div>
+    {% if upcoming_error %}
+        <div class="search-message search-error" role="alert"><strong>Upcoming search unavailable.</strong> {{ upcoming_error }}</div>
+    {% endif %}
+
+    {% if past_error %}
+        <div class="search-message search-error source-message" role="alert"><strong>Past concert search unavailable.</strong> {{ past_error }}</div>
+    {% endif %}
+
+    {% if searched and not events and not past_events and not upcoming_error and not past_error %}
+        <div class="search-message"><strong>No concerts found.</strong> Try a broader artist or venue name, or a nearby city.</div>
     {% elif not searched %}
-        <div class="search-message"><strong>Ready when you are.</strong> Enter an artist, venue, location—or combine all three—to see upcoming concerts.</div>
+        <div class="search-message"><strong>Ready when you are.</strong> Search an artist, venue, or city to explore upcoming concerts.</div>
     {% endif %}
 
     {% if events %}
-    <div class="concert-grid">
-        {% for event in events %}
-        <article class="concert-card card-{{ loop.cycle('violet', 'coral', 'lime') }}">
-            <div class="card-visual{% if event.image %} has-image{% endif %}">
-                {% if event.image %}<img class="card-image" src="{{ event.image }}" alt="{{ event.image_alt }}" loading="lazy">{% endif %}
-                <span class="date-badge"><strong>{{ event.date_day }}</strong> {{ event.date_month }}</span>
-                <span class="genre-tag">{{ event.genre }}</span>
-                {% if not event.image %}<div class="visual-shape shape-orbit"></div>{% endif %}
-            </div>
-            <div class="card-content">
-                <p>{{ event.date_label }} · {{ event.time_label }}</p>
-                <h3>{{ event.name }}</h3>
-                {% if event.artist and event.artist != event.name %}<span class="event-artist">{{ event.artist }}</span>{% endif %}
-                <span>{{ event.venue }}{% if event.location %} · {{ event.location }}{% endif %}</span>
-                {% if event.url %}<a href="{{ event.url }}" target="_blank" rel="noopener noreferrer">See on Ticketmaster <span aria-hidden="true">&#8594;</span></a>{% endif %}
-            </div>
-        </article>
-        {% endfor %}
-    </div>
+    <section class="results-group" aria-labelledby="concerts-heading">
+        <div class="results-group-heading">
+            <div><p class="result-kicker">Powered by JamBase</p><h3 id="concerts-heading">Upcoming concerts</h3></div>
+            <span id="visible-result-count">Showing {{ events|length }} of {{ total_results }}</span>
+        </div>
+        {% set result_events = events %}
+        {% set grid_id = "upcoming-event-grid" %}
+        {% include "_event_grid.html" %}
+        {% if has_more %}
+        <div class="load-more-row">
+            <button
+                class="load-more-button"
+                id="load-more"
+                type="button"
+                data-url="{{ url_for('load_more_events', artist=artist, venue=venue, location=location, page=next_page) }}"
+                data-grid-id="upcoming-event-grid"
+                data-count-id="visible-result-count"
+                data-total="{{ total_results }}"
+            >Load more concerts</button>
+            <p class="load-more-error" id="load-more-error" role="alert" hidden></p>
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {% if past_events %}
+    <section class="results-group" aria-labelledby="past-concerts-heading">
+        <div class="results-group-heading">
+            <div><p class="result-kicker">Powered by Setlist.fm</p><h3 id="past-concerts-heading">Past concerts</h3></div>
+            <span id="past-visible-result-count">{{ past_events|length }} shown</span>
+        </div>
+        {% set result_events = past_events %}
+        {% set grid_id = "past-event-grid" %}
+        {% include "_event_grid.html" %}
+        {% if past_has_more %}
+        <div class="load-more-row">
+            <button
+                class="load-more-button"
+                type="button"
+                data-url="{{ url_for('load_more_past_events', artist=artist, venue=venue, location=location, page=past_next_page) }}"
+                data-grid-id="past-event-grid"
+                data-count-id="past-visible-result-count"
+            >Load more past concerts</button>
+            <p class="load-more-error" role="alert" hidden></p>
+        </div>
+        {% endif %}
+    </section>
     {% endif %}
 </section>
 <section class="recommendation-banner">
@@ -83,4 +117,56 @@
     <p>Combine an artist you love with a city or favorite venue to narrow in on the right night out.</p>
     <a class="button-light" href="{{ url_for('about') }}">How Encore works <span aria-hidden="true">&#8594;</span></a>
 </section>
+{% if has_more or past_has_more %}
+<script>
+(() => {
+    document.querySelectorAll(".load-more-button").forEach((button) => {
+      const grid = document.getElementById(button.dataset.gridId);
+      const count = document.getElementById(button.dataset.countId);
+      const row = button.closest(".load-more-row");
+      const error = row.querySelector(".load-more-error");
+      if (!grid) return;
+
+      button.addEventListener("click", async () => {
+        const originalLabel = button.textContent;
+        button.disabled = true;
+        button.textContent = "Loading concerts…";
+        error.hidden = true;
+
+        try {
+            const response = await fetch(button.dataset.url, {
+                headers: {"Accept": "application/json"},
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Concerts could not be loaded.");
+
+            const holder = document.createElement("div");
+            holder.innerHTML = data.html;
+            Array.from(holder.children).forEach((card) => grid.appendChild(card));
+            if (count) {
+                count.textContent = button.dataset.total
+                    ? `Showing ${grid.children.length} of ${button.dataset.total}`
+                    : `${grid.children.length} shown`;
+            }
+
+            if (data.has_more) {
+                const nextUrl = new URL(button.dataset.url, window.location.origin);
+                nextUrl.searchParams.set("page", data.next_page);
+                button.dataset.url = nextUrl.toString();
+                button.disabled = false;
+                button.textContent = originalLabel;
+            } else {
+                row.remove();
+            }
+        } catch (loadError) {
+            button.disabled = false;
+            button.textContent = "Try loading more again";
+            error.textContent = loadError.message;
+            error.hidden = false;
+        }
+      });
+    });
+})();
+</script>
+{% endif %}
 {% endblock %}
