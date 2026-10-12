@@ -108,7 +108,7 @@ Create `.env` using the variables below. Never commit credentials. Assign the da
 Start the SSH tunnel in a separate terminal, adjusting username, host, and private-key location for your account:
 
 ```powershell
-ssh -N -T -o IdentitiesOnly=yes -o ExitOnForwardFailure=yes -L 127.0.0.1:3307:127.0.0.1:3306 -i "$env:USERPROFILE\.ssh\cikeys" -p 22 hardikka@csuci.dooo.host.reclaimhosting.com
+ssh -v -N -T -o IdentitiesOnly=yes -o ExitOnForwardFailure=yes -L 127.0.0.1:3307:127.0.0.1:3306 -i "$env:USERPROFILE\.ssh\cikeys" -p 22 hardikka@csuci.dooo.host.reclaimhosting.com
 ```
 
 Keep it running. Initialize the tables and start Flask from the project directory:
