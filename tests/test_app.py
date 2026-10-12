@@ -16,7 +16,10 @@ def client(monkeypatch):
             return False
 
     monkeypatch.setattr("routes.main.SetlistService", EmptySetlistService)
-    app = create_app("development")
+    app = create_app("testing")
+    from models import db
+    with app.app_context():
+        db.create_all()
     app.config["TESTING"] = True
     with app.test_client() as client:
         yield client

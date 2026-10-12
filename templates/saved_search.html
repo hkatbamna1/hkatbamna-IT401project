@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ saved.title }} — Encore{% endblock %}
+{% block content %}
+<section class="profile-shell saved-search">
+    <a class="back-link" href="{{ url_for('profile') }}">&larr; Your search library</a>
+    <p class="eyebrow"><span></span> Saved discoveries</p>
+    <h1 class="profile-title">{{ saved.title }}</h1>
+    <p class="hero-intro">{{ saved.description or 'A little inspiration for your next night out.' }}</p>
+    <div class="library-explainer">These are saved results, not a live concert listing. Dates, availability, and ticket prices may have changed.
+        <a href="{{ url_for('index', **saved.filters) }}">Search again &rarr;</a>
+    </div>
+    <p class="snapshot-meta">Created {{ saved.created_at.strftime('%b %d, %Y %H:%M') }} UTC · Last retrieved {{ saved.retrieved_at.strftime('%b %d, %Y %H:%M') }} UTC</p>
+    <details class="search-editor">
+        <summary>Rename, add notes, or delete</summary>
+        <form method="post" action="{{ url_for('edit_search', search_id=saved.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>Search title<input name="title" required maxlength="200" value="{{ saved.title }}"></label>
+            <label>Your notes<textarea name="description" maxlength="4000" rows="3" placeholder="Who’s coming? Which venues caught your eye?">{{ saved.description }}</textarea></label>
+            <button class="action-button" type="submit">Save changes</button>
+        </form>
+        <form class="delete-search-form" method="post" action="{{ url_for('delete_search', search_id=saved.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <p>Deleting removes this search and its saved results from your library.</p>
+            <button class="action-button danger-button" type="submit">Delete saved search</button>
+        </form>
+    </details>
+    {% for group in groups %}
+    <section class="results-group">
+        <div class="results-group-heading"><div>
+            <p class="result-kicker">{{ 'JamBase' if group.source == 'jambase' else 'Setlist.fm' }} · {{ group.events|length }} saved concerts</p>
+            <h3>{{ 'Upcoming when searched' if group.source == 'jambase' else 'Past performances' }}</h3>
+        </div></div>
+        <p class="snapshot-meta">Retrieved {{ group.retrieved_at[:16]|replace('T', ' ') }} UTC · {{ group.page_count }} saved {{ 'page' if group.page_count == 1 else 'pages' }}</p>
+        {% if group.events %}
+            {% set result_events = group.events %}{% set grid_id = 'saved-' ~ group.source %}
+            {% include "_event_grid.html" %}
+        {% else %}<p class="search-message">This search returned no concerts from this source.</p>{% endif %}
+    </section>
+    {% endfor %}
+    {% if groups|length < 2 %}<p class="search-message">Only one concert source has saved results for this search. Search again to try the other source.</p>{% endif %}
+    <p class="snapshot-meta">Only pages you loaded are saved. Search again to explore additional results.</p>
+</section>
+<script>
+document.querySelector('.delete-search-form').addEventListener('submit', (event) => {
+    if (!window.confirm('Delete this saved search from your library?')) event.preventDefault();
+});
+</script>
+{% endblock %}

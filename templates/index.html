@@ -56,11 +56,21 @@
     {% endif %}
 
     {% if searched and not events and not past_events and not upcoming_error and not past_error %}
+        {% if saved_id %}<p><a href="{{ url_for('saved_search', search_id=saved_id) }}">View saved search</a></p>{% endif %}
         <div class="search-message"><strong>No concerts found.</strong> Try a broader artist or venue name, or a nearby city.</div>
     {% elif not searched %}
         <div class="search-message"><strong>Ready when you are.</strong> Search an artist, venue, or city to explore upcoming concerts.</div>
     {% endif %}
 
+    {% if result_pages %}
+        <div class="library-explainer">
+            {% if saved_id %}Saved to <a href="{{ url_for('saved_search', search_id=saved_id) }}">your search library</a>.
+            {% else %}<a href="{{ url_for('google_login') }}">Sign in</a> before your next search to keep a personal history.{% endif %}
+            {% for source, result in result_pages.items() %}
+                <span class="result-freshness">{{ 'JamBase' if source == 'jambase' else 'Setlist.fm' }}: {{ 'reused saved results' if result.cached else 'new results' }} · retrieved {{ result.retrieved_at[:16]|replace('T', ' ') }} UTC.</span>
+            {% endfor %}
+        </div>
+    {% endif %}
     {% if events %}
     <section class="results-group" aria-labelledby="concerts-heading">
         <div class="results-group-heading">

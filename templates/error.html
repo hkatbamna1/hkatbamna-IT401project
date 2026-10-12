@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Encore — Please try again{% endblock %}
+{% block content %}
+<section class="profile-shell">
+    <p class="eyebrow"><span></span> A pause in the music</p>
+    <h1 class="profile-title">We couldn’t finish that.</h1>
+    <p class="hero-intro" role="alert">{{ message }}</p>
+    <a class="button-light" href="{{ url_for('index') }}">Back to Discover</a>
+</section>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Your profile — Encore{% endblock %}
+{% block content %}
+<section class="profile-shell">
+    <div class="profile-heading">
+        <div><p class="eyebrow"><span></span> Your Encore</p>
+        <h1 class="profile-title">Good nights.<br><em>Worth keeping.</em></h1>
+        <p class="hero-intro">Welcome, {{ user.title }}. Revisit your searches and the concerts you found.</p></div>
+        <div class="library-stat"><strong>{{ total }}</strong><span>saved {{ 'search' if total == 1 else 'searches' }}</span></div>
+    </div>
+    <div class="library-explainer">Your searches save here automatically. Open saved results anytime without making a new concert search.</div>
+    <form class="library-new" method="get" action="{{ url_for('index') }}">
+        <h2>Find something to remember.</h2>
+        <div class="library-fields">
+            <label>Artist<input name="artist" maxlength="160" placeholder="e.g. Hozier"></label>
+            <label>Venue<input name="venue" maxlength="160" placeholder="e.g. The Wiltern"></label>
+            <label>City<input name="location" maxlength="160" placeholder="e.g. Los Angeles, CA"></label>
+            <button class="action-button" type="submit">Search &amp; save</button>
+        </div>
+    </form>
+    <div class="library-toolbar"><h2>Your search history</h2>
+        <form method="get" class="library-filter"><label class="sr-only" for="library-query">Find a saved search by title</label>
+            <input id="library-query" name="q" maxlength="160" value="{{ query }}" placeholder="Find a saved search">
+            <button class="action-button" type="submit">Filter</button></form>
+    </div>
+    <div class="history-grid">
+    {% for saved in searches.items %}
+        <article class="history-card">
+            <p class="result-kicker">Saved search · {{ saved.last_viewed_at.strftime('%b %d, %Y') }} UTC</p>
+            <h3><a href="{{ url_for('saved_search', search_id=saved.id) }}">{{ saved.title }}</a></h3>
+            <p>{{ saved.description or 'Your concert discoveries, ready for another look.' }}</p>
+            <dl>{% for key, value in saved.filters.items() if value %}<div><dt>{{ key|title }}</dt><dd>{{ value }}</dd></div>{% endfor %}</dl>
+            <div class="history-actions">
+                <a class="history-link" href="{{ url_for('saved_search', search_id=saved.id) }}">View saved results &rarr;</a>
+                <form class="history-delete" method="post" action="{{ url_for('delete_search', search_id=saved.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="action-button danger-button" type="submit" aria-label="Delete {{ saved.title }}">Delete</button>
+                </form>
+            </div>
+            <details class="search-editor history-editor">
+                <summary>Edit title &amp; notes</summary>
+                <form method="post" action="{{ url_for('edit_search', search_id=saved.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="return_to" value="profile">
+                    <label>Search title<input name="title" required maxlength="200" value="{{ saved.title }}"></label>
+                    <label>Your notes<textarea name="description" maxlength="4000" rows="3">{{ saved.description }}</textarea></label>
+                    <div class="history-actions">
+                        <button class="action-button" type="submit">Save changes</button>
+                        <button class="action-button secondary-button cancel-edit" type="button">Cancel</button>
+                    </div>
+                </form>
+            </details>
+        </article>
+    {% else %}
+        <div class="search-message">{{ 'No saved searches match that title.' if query else 'Your library starts with your next search. Try an artist, venue, or city above.' }}</div>
+    {% endfor %}
+    </div>
+    <nav class="library-pagination" aria-label="Search history pages">
+        {% if searches.has_prev %}<a href="{{ url_for('profile', q=query, page=searches.prev_num) }}">&larr; Previous</a>{% endif %}
+        {% if searches.pages %}<span>Page {{ searches.page }} of {{ searches.pages }}</span>{% endif %}
+        {% if searches.has_next %}<a href="{{ url_for('profile', q=query, page=searches.next_num) }}">Next &rarr;</a>{% endif %}
+    </nav>
+</section>
+<script>
+document.querySelectorAll('.history-delete').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+        if (!window.confirm('Delete this saved search and its results from your library?')) event.preventDefault();
+    });
+});
+document.querySelectorAll('.cancel-edit').forEach((button) => {
+    button.addEventListener('click', () => {
+        const editor = button.closest('details');
+        button.closest('form').reset();
+        editor.open = false;
+        editor.querySelector('summary').focus();
+    });
+});
+</script>
+{% endblock %}
