@@ -1,0 +1,9 @@
+{% macro concert_filters(values, sorts, sources, include_location=true, prefix='filter', default_sort='relevance') %}
+<div class="concert-filters">
+    <div><label for="{{ prefix }}-source">Provider</label><select id="{{ prefix }}-source" name="source"><option value="">All providers</option>{% for key, label in sources.items() %}<option value="{{ key }}" {% if values.get('source') == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    {% if include_location %}<div><label for="{{ prefix }}-location">City</label><input id="{{ prefix }}-location" name="location" maxlength="160" value="{{ values.get('location', '') }}" placeholder="e.g. Los Angeles"></div>{% endif %}
+    <div><label for="{{ prefix }}-from">From date</label><input id="{{ prefix }}-from" type="date" name="date_from" value="{{ values.get('date_from', '') }}"></div>
+    <div><label for="{{ prefix }}-to">Through date</label><input id="{{ prefix }}-to" type="date" name="date_to" value="{{ values.get('date_to', '') }}"></div>
+    <div><label for="{{ prefix }}-sort">Sort by</label><select id="{{ prefix }}-sort" name="sort">{% for key, label in sorts.items() %}<option value="{{ key }}" {% if values.get('sort', default_sort) == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+</div>
+{% endmacro %}

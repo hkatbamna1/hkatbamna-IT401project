@@ -1,0 +1,5 @@
+{% if results.pages %}<nav class="library-pagination" aria-label="Result pages">
+    {% if results.has_prev %}<a rel="prev" href="{{ page_url(results.prev_num) }}">&larr; Previous</a>{% endif %}
+    <span>Page {{ results.page }} of {{ results.pages }}</span>
+    {% if results.has_next %}<a rel="next" href="{{ page_url(results.next_num) }}">Next &rarr;</a>{% endif %}
+</nav>{% endif %}

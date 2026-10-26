@@ -1,5 +1,5 @@
 {% for event in result_events %}
-<article class="concert-card card-{{ loop.cycle('violet', 'coral', 'lime') }}">
+<article class="concert-card card-{{ loop.cycle('violet', 'coral', 'lime') }}" data-title="{{ event.sort_title|default(event.name|lower) }}" data-date="{{ event.sort_date|default(event.date_iso|default('')) }}" data-score="{{ event.sort_score|default(0) }}" data-event-id="{{ event.id|default('') }}">
     <div class="card-visual{% if event.image %} has-image{% endif %}">
         {% if event.image %}<img class="card-image" src="{{ event.image }}" alt="{{ event.image_alt }}" loading="lazy">{% endif %}
         <span class="date-badge"><strong>{{ event.date_day }}</strong> {{ event.date_month }}</span>
@@ -10,7 +10,7 @@
         <p>{{ event.date_label }} · {{ event.time_label }}</p>
         <span class="source-badge source-{{ event.source }}">{{ event.source_label }}</span>
         {% if event.status %}<span class="status-badge">{{ event.status }}</span>{% endif %}
-        <h3>{{ event.name }}</h3>
+        <h3>{% if event.catalog_id %}<a class="concert-title-link" href="{{ url_for('concert_detail', concert_id=event.catalog_id) }}">{{ event.name }}</a>{% else %}{{ event.name }}{% endif %}</h3>
         {% if event.artist and event.artist != event.name %}<span class="event-artist">{{ event.artist }}</span>{% endif %}
         {% if event.tour %}<span class="event-tour"><strong>Tour:</strong> {{ event.tour }}</span>{% endif %}
         {% if event.supporting_artists %}
@@ -20,6 +20,7 @@
         </div>
         {% endif %}
         <span>{{ event.venue }}{% if event.location %} · {{ event.location }}{% endif %}</span>
+        {% if event.retrieved_label %}<span class="result-freshness">Collected {{ event.retrieved_label }}</span>{% endif %}
         <div class="card-links">
             {% if event.url %}<a href="{{ event.url }}" target="_blank" rel="noopener noreferrer">{{ event.link_label }} <span aria-hidden="true">&#8594;</span></a>{% endif %}
             {% if event.ticket_url %}<a href="{{ event.ticket_url }}" target="_blank" rel="noopener noreferrer">Tickets <span aria-hidden="true">&#8599;</span></a>{% endif %}

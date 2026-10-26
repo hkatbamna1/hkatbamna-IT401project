@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% from "_search_controls.html" import concert_filters %}
 {% block title %}{{ saved.title }} — Encore{% endblock %}
 {% block content %}
 <section class="profile-shell saved-search">
-    <a class="back-link" href="{{ url_for('profile') }}">&larr; Your search library</a>
+    <a class="back-link" href="{{ url_for('profile') }}">&larr; My library</a>
     <p class="eyebrow"><span></span> Saved discoveries</p>
     <h1 class="profile-title">{{ saved.title }}</h1>
     <p class="hero-intro">{{ saved.description or 'A little inspiration for your next night out.' }}</p>
@@ -10,6 +11,14 @@
         <a href="{{ url_for('index', **saved.filters) }}">Search again &rarr;</a>
     </div>
     <p class="snapshot-meta">Created {{ saved.created_at.strftime('%b %d, %Y %H:%M') }} UTC · Last retrieved {{ saved.retrieved_at.strftime('%b %d, %Y %H:%M') }} UTC</p>
+    <form method="get" class="catalog-form" role="search">
+        <div class="catalog-keyword"><label for="saved-query">Search these saved concerts</label>
+            <input id="saved-query" type="search" name="q" maxlength="160" value="{{ values.get('q', '') }}" placeholder="Artist, concert title, venue, or tour">
+            <p>Filters and sorting apply to all concerts saved in this search.</p>
+        </div>
+        {{ concert_filters(values, sorts, sources, prefix='saved') }}
+        <div class="catalog-actions"><button class="action-button" type="submit">Apply filters</button><a href="{{ url_for('saved_search', search_id=saved.id) }}">Clear search &amp; filters</a></div>
+    </form>
     <details class="search-editor">
         <summary>Rename, add notes, or delete</summary>
         <form method="post" action="{{ url_for('edit_search', search_id=saved.id) }}">
@@ -24,20 +33,12 @@
             <button class="action-button danger-button" type="submit">Delete saved search</button>
         </form>
     </details>
-    {% for group in groups %}
-    <section class="results-group">
-        <div class="results-group-heading"><div>
-            <p class="result-kicker">{{ 'JamBase' if group.source == 'jambase' else 'Setlist.fm' }} · {{ group.events|length }} saved concerts</p>
-            <h3>{{ 'Upcoming when searched' if group.source == 'jambase' else 'Past performances' }}</h3>
-        </div></div>
-        <p class="snapshot-meta">Retrieved {{ group.retrieved_at[:16]|replace('T', ' ') }} UTC · {{ group.page_count }} saved {{ 'page' if group.page_count == 1 else 'pages' }}</p>
-        {% if group.events %}
-            {% set result_events = group.events %}{% set grid_id = 'saved-' ~ group.source %}
-            {% include "_event_grid.html" %}
-        {% else %}<p class="search-message">This search returned no concerts from this source.</p>{% endif %}
-    </section>
-    {% endfor %}
-    {% if groups|length < 2 %}<p class="search-message">Only one concert source has saved results for this search. Search again to try the other source.</p>{% endif %}
+    <div class="catalog-results-heading" role="status"><h2>{{ results.total }} {{ 'saved concert' if results.total == 1 else 'saved concerts' }}{% if options.query %} found for “{{ options.query }}”{% endif %}</h2>
+        {% if results.total %}<p>Showing {{ results.first }}–{{ results.last }} of {{ results.total }} · {{ sorts[options.sort] }}</p>{% endif %}
+    </div>
+    {% if result_events %}<div class="concert-grid">{% include "_event_cards.html" %}</div>
+    {% else %}<p class="search-message">No matching records were found. Try a broader term or remove a filter.</p>{% endif %}
+    {% include "_results_pagination.html" %}
     <p class="snapshot-meta">Only pages you loaded are saved. Search again to explore additional results.</p>
 </section>
 <script>

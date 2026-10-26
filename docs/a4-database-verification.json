@@ -1,0 +1,16 @@
+{
+  "verified_at": "2026-10-26T06:29:15.540386+00:00",
+  "database": "Configured MySQL-compatible MariaDB",
+  "retrieval_scope": "Owner-scoped My library and private SavedConcert snapshots",
+  "catalog_records": 223,
+  "private_concert_records": 168,
+  "saved_search_records": 5,
+  "automated_tests_passed": 88,
+  "case_normalization": "passed",
+  "literal_input": "passed",
+  "all_sort_options": "passed, with and without a keyword",
+  "ownership_scope": "passed",
+  "database_only_search": "passed; concert API calls blocked during HTTP checks",
+  "legacy_search_redirect": "passed",
+  "telemetry_insert": "passed; verification rolled back"
+}

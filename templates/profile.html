@@ -1,37 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Your profile — Encore{% endblock %}
+{% from "_search_controls.html" import concert_filters %}
+{% block title %}My library — Encore{% endblock %}
 {% block content %}
 <section class="profile-shell">
     <div class="profile-heading">
-        <div><p class="eyebrow"><span></span> Your Encore</p>
+        <div><p class="eyebrow"><span></span> My library</p>
         <h1 class="profile-title">Good nights.<br><em>Worth keeping.</em></h1>
-        <p class="hero-intro">Welcome, {{ user.title }}. Revisit your searches and the concerts you found.</p></div>
+        <p class="hero-intro">Welcome, {{ user.title }}. Your saved searches, concert discoveries, and personal notes are here.</p></div>
         <div class="library-stat"><strong>{{ total }}</strong><span>saved {{ 'search' if total == 1 else 'searches' }}</span></div>
     </div>
-    <div class="library-explainer">Your searches save here automatically. Open saved results anytime without making a new concert search.</div>
-    <form class="library-new" method="get" action="{{ url_for('index') }}">
-        <h2>Find something to remember.</h2>
-        <div class="library-fields">
-            <label>Artist<input name="artist" maxlength="160" placeholder="e.g. Hozier"></label>
-            <label>Venue<input name="venue" maxlength="160" placeholder="e.g. The Wiltern"></label>
-            <label>City<input name="location" maxlength="160" placeholder="e.g. Los Angeles, CA"></label>
-            <button class="action-button" type="submit">Search &amp; save</button>
+    <div class="library-explainer">Searches from <a href="{{ url_for('index') }}">Find new concerts</a> save here automatically while you are signed in. Reopen your results, add notes, or rename a search.</div>
+    <form method="get" action="{{ url_for('profile') }}" class="catalog-form" role="search">
+        <div class="catalog-keyword"><label for="library-query">Search your library</label>
+            <input id="library-query" type="search" name="q" maxlength="160" value="{{ query }}" placeholder="Artist, venue, tour, saved title, or notes">
+            <p>Search only your saved searches and the concerts within them.</p>
         </div>
+        {{ concert_filters(values, sorts, sources, prefix='library', default_sort='recent') }}
+        <div class="catalog-actions"><button class="action-button" type="submit">Search library</button><a href="{{ url_for('profile') }}">Clear search &amp; filters</a><a href="{{ url_for('search_activity') }}">Search activity</a></div>
     </form>
-    <div class="library-toolbar"><h2>Your search history</h2>
-        <form method="get" class="library-filter"><label class="sr-only" for="library-query">Find a saved search by title</label>
-            <input id="library-query" name="q" maxlength="160" value="{{ query }}" placeholder="Find a saved search">
-            <button class="action-button" type="submit">Filter</button></form>
-    </div>
+    {% if initial_search %}<p class="search-message" role="status">Enter a keyword or use filters to search your library. Your saved searches are shown below.</p>{% endif %}
+    <div class="library-toolbar"><h2>Saved searches</h2><span class="result-count">{{ searches.total }} {{ 'search' if searches.total == 1 else 'searches' }}{% if query %} found for “{{ query }}”{% endif %}</span></div>
     <div class="history-grid">
     {% for saved in searches.items %}
         <article class="history-card">
             <p class="result-kicker">Saved search · {{ saved.last_viewed_at.strftime('%b %d, %Y') }} UTC</p>
-            <h3><a href="{{ url_for('saved_search', search_id=saved.id) }}">{{ saved.title }}</a></h3>
+            <h3><a href="{{ saved.result_url }}">{{ saved.title }}</a></h3>
             <p>{{ saved.description or 'Your concert discoveries, ready for another look.' }}</p>
             <dl>{% for key, value in saved.filters.items() if value %}<div><dt>{{ key|title }}</dt><dd>{{ value }}</dd></div>{% endfor %}</dl>
+            <p>{{ saved.matching_concerts }} {{ 'matching concert' if saved.matching_concerts == 1 else 'matching concerts' }}</p>
             <div class="history-actions">
-                <a class="history-link" href="{{ url_for('saved_search', search_id=saved.id) }}">View saved results &rarr;</a>
+                <a class="history-link" href="{{ saved.result_url }}">View saved results &rarr;</a>
                 <form class="history-delete" method="post" action="{{ url_for('delete_search', search_id=saved.id) }}">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button class="action-button danger-button" type="submit" aria-label="Delete {{ saved.title }}">Delete</button>
@@ -52,14 +50,10 @@
             </details>
         </article>
     {% else %}
-        <div class="search-message">{{ 'No saved searches match that title.' if query else 'Your library starts with your next search. Try an artist, venue, or city above.' }}</div>
+        <div class="search-message">{% if total %}No matching records were found. Try a broader term or remove a filter. <a href="{{ url_for('profile') }}">Clear filters</a>.{% else %}Your library starts with your next discovery. <a href="{{ url_for('index') }}">Find new concerts</a> to save your first search.{% endif %}</div>
     {% endfor %}
     </div>
-    <nav class="library-pagination" aria-label="Search history pages">
-        {% if searches.has_prev %}<a href="{{ url_for('profile', q=query, page=searches.prev_num) }}">&larr; Previous</a>{% endif %}
-        {% if searches.pages %}<span>Page {{ searches.page }} of {{ searches.pages }}</span>{% endif %}
-        {% if searches.has_next %}<a href="{{ url_for('profile', q=query, page=searches.next_num) }}">Next &rarr;</a>{% endif %}
-    </nav>
+    {% set results = searches %}{% include "_results_pagination.html" %}
 </section>
 <script>
 document.querySelectorAll('.history-delete').forEach((form) => {

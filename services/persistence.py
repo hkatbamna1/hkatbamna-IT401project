@@ -9,6 +9,7 @@ from flask import abort, current_app, session
 from sqlalchemy.exc import IntegrityError
 
 from models import CachedResult, SavedSearch, User, db, utcnow
+from services.catalog import ingest_events, sync_saved_concerts
 
 
 SOURCES = {"jambase": "https://www.jambase.com", "setlistfm": "https://www.setlist.fm"}
@@ -109,6 +110,7 @@ def result_page(source, filters, page, factory):
         else:
             for name, value in values.items():
                 setattr(cached, name, value)
+        ingest_events(events, source, now)
         try:
             db.session.commit()
         except IntegrityError:
@@ -116,6 +118,8 @@ def result_page(source, filters, page, factory):
             cached = db.session.scalar(db.select(CachedResult).where(CachedResult.cache_key == key))
             if cached is None:
                 raise
+            ingest_events(cached.events, source, cached.retrieved_at)
+            db.session.commit()
     return {"events": copy.deepcopy(cached.events), "total": cached.total, "has_more": cached.has_more,
             "retrieved_at": cached.retrieved_at.isoformat(), "cached": from_cache, "page": page}
 
@@ -147,6 +151,7 @@ def save_history(filters, pages):
         saved.retrieved_at = max(datetime.fromisoformat(p["retrieved_at"])
                                  for group in snapshots.values() for p in group.values())
         try:
+            sync_saved_concerts(saved)
             db.session.commit()
             return saved.id
         except IntegrityError:

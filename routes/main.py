@@ -4,6 +4,8 @@ from flask import abort, current_app, jsonify, render_template, request
 from services.search_service import MissingApiKeyError, SearchService
 from services.setlist_service import MissingSetlistApiKeyError, SetlistService
 from services.persistence import result_page, save_history, validate_filters
+from services.result_controls import discovery_options, refine_events
+from services.retrieval import InvalidSearch, SORTS, SOURCES
 
 
 def register_routes(app):
@@ -15,10 +17,16 @@ def register_routes(app):
     @app.get("/")
     def index():
         filters = validate_filters(request.args)
+        try:
+            options = discovery_options(request.args, filters)
+        except InvalidSearch as error:
+            abort(400, description=str(error))
         searched = any(filters.values())
         pages, errors = {}, {}
         if searched:
             for source in ("jambase", "setlistfm"):
+                if options.source and source != options.source:
+                    continue
                 try:
                     pages[source] = acquire(source, filters, 1)
                 except (MissingApiKeyError, MissingSetlistApiKeyError) as exc:
@@ -29,15 +37,23 @@ def register_routes(app):
         upcoming, past = pages.get("jambase", {}), pages.get("setlistfm", {})
         return render_template(
             "index.html", **filters, searched=searched, saved_id=saved_id, result_pages=pages,
-            events=upcoming.get("events", []), past_events=past.get("events", []),
+            events=refine_events(upcoming.get("events", []), options), past_events=refine_events(past.get("events", []), options),
             has_more=upcoming.get("has_more", False), past_has_more=past.get("has_more", False),
             next_page=2, past_next_page=2,
             total_results=upcoming.get("total", 0), past_total_results=past.get("total", 0),
             upcoming_error=errors.get("jambase"), past_error=errors.get("setlistfm"),
+            options=options, values=request.args, sorts=SORTS, sources=SOURCES,
+            refined=bool(options.date_from or options.date_to),
         )
 
     def load_page(source):
         filters = validate_filters(request.args)
+        try:
+            options = discovery_options(request.args, filters)
+        except InvalidSearch as error:
+            abort(400, description=str(error))
+        if options.source and options.source != source:
+            abort(400, description="That provider is excluded by your filters.")
         if not any(filters.values()):
             abort(400, description="Enter an artist, venue, or city before loading concerts.")
         try:
@@ -53,7 +69,7 @@ def register_routes(app):
         except requests.RequestException:
             return jsonify(error="The concert provider could not load more concerts."), 502
         saved_id = save_history(filters, {source: result})
-        return jsonify(html=render_template("_event_cards.html", result_events=result["events"]),
+        return jsonify(html=render_template("_event_cards.html", result_events=refine_events(result["events"], options)),
                        has_more=result["has_more"], next_page=page + 1,
                        cached=result["cached"], retrieved_at=result["retrieved_at"], saved_id=saved_id)
 

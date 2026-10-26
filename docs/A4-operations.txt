@@ -1,0 +1,37 @@
+Encore A4 - quick operation
+
+README.md is the complete, current project and submission documentation.
+
+With the configured database tunnel open, from the repository root:
+
+  .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+  .\.venv\Scripts\python.exe -m flask --app app db upgrade
+  .\.venv\Scripts\python.exe -m flask --app app backfill-catalog
+  .\.venv\Scripts\python.exe -m flask --app app backfill-saved-concerts
+  .\.venv\Scripts\python.exe app.py
+
+Discover acquires new pages and refines loaded results. Sign in and use My
+library to search your own saved searches and their concert snapshots. Open
+saved results to filter, sort and paginate the entire stored snapshot. The old
+/search URL redirects to the private library. Shared catalog rows are not
+searched by My library.
+
+Verification and evidence rebuild:
+
+  .\.venv\Scripts\python.exe -m pip install -r requirements-docs.txt
+  .\.venv\Scripts\python.exe scripts/acquire_a4_examples.py
+  .\.venv\Scripts\python.exe scripts/verify_a4_database.py
+  .\.venv\Scripts\python.exe scripts/build_a4_report.py
+
+Acquisition uses the normal API cache/catalog and exports public George Clanton
+facts. Verification checks the private flow against MariaDB; its test telemetry
+insert rolls back. Documentation previews and controlled relevance fixtures run
+in separate process-local SQLite databases. No demo account or synthetic concert
+is written to MariaDB. Headless Microsoft Edge supplies browser evidence.
+
+Outputs: docs/Encore-A4.pdf, docs/a4-evaluation.json, docs/a4-tests.txt,
+docs/a4-database-verification.json, docs/george-clanton-acquisition.json,
+docs/a4-screenshot-manifest.json, docs/screenshots/a4/.
+
+Reacquire current data if the tour evidence becomes stale. Screenshots label the
+real George Clanton examples separately from synthetic relevance fixtures.

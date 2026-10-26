@@ -1,0 +1,85 @@
+{
+  "captured_at": "2026-10-25T23:29:44.911991-07:00",
+  "real_data": {
+    "artist": "George Clanton",
+    "provider": "JamBase",
+    "capture_date_local": "2026-10-25",
+    "upcoming_loaded": 26,
+    "pages_loaded": 3,
+    "corroboration_url": "https://groundcontroltouring.com/artists/george-clanton"
+  },
+  "screenshots": [
+    {
+      "file": "george-clanton-upcoming.png",
+      "caption": "Discover: George Clanton's upcoming concerts",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/?artist=George+Clanton&venue=&location=&source=jambase&date_from=2026-10-25&date_to=&sort=date_asc#shows"
+    },
+    {
+      "file": "search-form.png",
+      "caption": "My library: dedicated GET search form and initial guidance",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile"
+    },
+    {
+      "file": "library.png",
+      "caption": "Private library keyword search finds the saved George Clanton search",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile?q=George+Clanton&source=&location=&date_from=&date_to=&sort=recent"
+    },
+    {
+      "file": "search-results.png",
+      "caption": "Search stored concerts: George Clanton, upcoming dates, earliest first",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile/searches/1?q=George+Clanton&source=&location=&date_from=2026-10-25&date_to=&sort=date_asc"
+    },
+    {
+      "file": "pagination.png",
+      "caption": "Second result page preserves keyword, date filter, and sorting",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile/searches/1?q=George+Clanton&source=&location=&date_from=2026-10-25&date_to=&sort=date_asc&page=2"
+    },
+    {
+      "file": "filtered-results.png",
+      "caption": "Provider, city (Los Angeles) and date filters combined with a keyword",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile/searches/1?q=George+Clanton&source=jambase&location=Los+Angeles&date_from=2026-10-25&date_to=2027-01-30&sort=date_asc"
+    },
+    {
+      "file": "sorted-results.png",
+      "caption": "Alternate ordering: latest George Clanton concert dates first",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile/searches/1?q=George+Clanton&date_from=2026-10-25&sort=date_desc"
+    },
+    {
+      "file": "no-results.png",
+      "caption": "Completed zero-result search with refinement guidance",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile/searches/1?q=zzzx-no-concert"
+    },
+    {
+      "file": "search-activity.png",
+      "caption": "Persisted private telemetry includes a zero-result search",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile/search-activity"
+    },
+    {
+      "file": "edit-search.png",
+      "caption": "Existing CRUD: saved title, personal notes and delete controls",
+      "dataset": "Real concert results; demonstration title/notes",
+      "path": "/profile"
+    },
+    {
+      "file": "mobile-search.png",
+      "caption": "Responsive private library search",
+      "dataset": "Real George Clanton JamBase results",
+      "path": "/profile?q=George+Clanton"
+    },
+    {
+      "file": "ranked-results.png",
+      "caption": "Controlled relevance evaluation: exact performer matches outrank a tribute title",
+      "dataset": "Synthetic evaluation fixtures; not real event listings",
+      "path": "/profile/searches/1?q=Hozier&sort=relevance"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_search_controls.html" import concert_filters %}
 {% block title %}Encore — Find your next live show{% endblock %}
 {% block content %}
 <section class="hero{% if searched %} hero-search-results{% endif %}">
@@ -28,6 +29,9 @@
                     <input type="text" name="location" value="{{ location }}" placeholder="City or City, ST" aria-label="City and optional state code">
                 </span>
             </label>
+            <div class="discovery-refinements">{{ concert_filters(values, sorts, sources, include_location=false, prefix='discover') }}
+                <p class="control-hint">Filters and sorting apply to the concerts loaded so far. Load more to explore additional matches.</p>
+            </div>
             <button type="submit">Find concerts <span aria-hidden="true">&#8594;</span></button>
         </form>
         <div class="trust-row"><span>JamBase + Setlist.fm</span><span>Artists, venues, and cities</span><span>Upcoming and past shows</span></div>
@@ -57,25 +61,25 @@
 
     {% if searched and not events and not past_events and not upcoming_error and not past_error %}
         {% if saved_id %}<p><a href="{{ url_for('saved_search', search_id=saved_id) }}">View saved search</a></p>{% endif %}
-        <div class="search-message"><strong>No concerts found.</strong> Try a broader artist or venue name, or a nearby city.</div>
+        <div class="search-message" id="discovery-empty"><strong>No concerts found{% if refined %} in the loaded results{% endif %}.</strong> Try a broader artist or venue name, or a nearby city.{% if refined %} Remove a date filter or load more concerts below.{% endif %}</div>
     {% elif not searched %}
         <div class="search-message"><strong>Ready when you are.</strong> Search an artist, venue, or city to explore upcoming concerts.</div>
     {% endif %}
 
     {% if result_pages %}
         <div class="library-explainer">
-            {% if saved_id %}Saved to <a href="{{ url_for('saved_search', search_id=saved_id) }}">your search library</a>.
+            {% if saved_id %}Saved to <a href="{{ url_for('saved_search', search_id=saved_id) }}">your library</a>.
             {% else %}<a href="{{ url_for('google_login') }}">Sign in</a> before your next search to keep a personal history.{% endif %}
             {% for source, result in result_pages.items() %}
                 <span class="result-freshness">{{ 'JamBase' if source == 'jambase' else 'Setlist.fm' }}: {{ 'reused saved results' if result.cached else 'new results' }} · retrieved {{ result.retrieved_at[:16]|replace('T', ' ') }} UTC.</span>
             {% endfor %}
         </div>
     {% endif %}
-    {% if events %}
+    {% if events or has_more %}
     <section class="results-group" aria-labelledby="concerts-heading">
         <div class="results-group-heading">
             <div><p class="result-kicker">Powered by JamBase</p><h3 id="concerts-heading">Upcoming concerts</h3></div>
-            <span id="visible-result-count">Showing {{ events|length }} of {{ total_results }}</span>
+            <span id="visible-result-count">{% if refined %}{{ events|length }} matching concerts loaded{% else %}Showing {{ events|length }} of {{ total_results }}{% endif %}</span>
         </div>
         {% set result_events = events %}
         {% set grid_id = "upcoming-event-grid" %}
@@ -86,10 +90,12 @@
                 class="load-more-button"
                 id="load-more"
                 type="button"
-                data-url="{{ url_for('load_more_events', artist=artist, venue=venue, location=location, page=next_page) }}"
+                data-url="{{ url_for('load_more_events', artist=artist, venue=venue, location=location, source=options.source, date_from=options.date_from, date_to=options.date_to, sort=options.sort, page=next_page) }}"
                 data-grid-id="upcoming-event-grid"
                 data-count-id="visible-result-count"
                 data-total="{{ total_results }}"
+                data-refined="{{ 'true' if refined else 'false' }}"
+                data-sort="{{ options.sort }}"
             >Load more concerts</button>
             <p class="load-more-error" id="load-more-error" role="alert" hidden></p>
         </div>
@@ -97,11 +103,11 @@
     </section>
     {% endif %}
 
-    {% if past_events %}
+    {% if past_events or past_has_more %}
     <section class="results-group" aria-labelledby="past-concerts-heading">
         <div class="results-group-heading">
             <div><p class="result-kicker">Powered by Setlist.fm</p><h3 id="past-concerts-heading">Past concerts</h3></div>
-            <span id="past-visible-result-count">{{ past_events|length }} shown</span>
+            <span id="past-visible-result-count">{{ past_events|length }} {{ 'matching concerts loaded' if refined else 'shown' }}</span>
         </div>
         {% set result_events = past_events %}
         {% set grid_id = "past-event-grid" %}
@@ -111,9 +117,11 @@
             <button
                 class="load-more-button"
                 type="button"
-                data-url="{{ url_for('load_more_past_events', artist=artist, venue=venue, location=location, page=past_next_page) }}"
+                data-url="{{ url_for('load_more_past_events', artist=artist, venue=venue, location=location, source=options.source, date_from=options.date_from, date_to=options.date_to, sort=options.sort, page=past_next_page) }}"
                 data-grid-id="past-event-grid"
                 data-count-id="past-visible-result-count"
+                data-refined="{{ 'true' if refined else 'false' }}"
+                data-sort="{{ options.sort }}"
             >Load more past concerts</button>
             <p class="load-more-error" role="alert" hidden></p>
         </div>
@@ -152,9 +160,35 @@
 
             const holder = document.createElement("div");
             holder.innerHTML = data.html;
-            Array.from(holder.children).forEach((card) => grid.appendChild(card));
+            const existingIds = new Set(Array.from(grid.children, card => card.dataset.eventId));
+            Array.from(holder.children).forEach((card) => {
+                if (!existingIds.has(card.dataset.eventId)) {
+                    grid.appendChild(card);
+                    existingIds.add(card.dataset.eventId);
+                }
+            });
+            const cards = Array.from(grid.children);
+            const compareText = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+            cards.sort((a, b) => {
+                const order = button.dataset.sort;
+                let difference = 0;
+                if (order === "date_asc" || order === "date_desc") {
+                    difference = Number(!a.dataset.date) - Number(!b.dataset.date);
+                    if (!difference) difference = compareText(a.dataset.date, b.dataset.date) * (order === "date_desc" ? -1 : 1);
+                } else {
+                    if (order === "relevance") difference = Number(b.dataset.score) - Number(a.dataset.score);
+                    if (!difference) difference = compareText(a.dataset.title, b.dataset.title);
+                }
+                return difference || compareText(a.dataset.eventId, b.dataset.eventId);
+            });
+            cards.forEach(card => grid.appendChild(card));
+            if (document.querySelector(".shows-section .concert-card")) {
+                document.getElementById("discovery-empty")?.remove();
+            }
             if (count) {
-                count.textContent = button.dataset.total
+                count.textContent = button.dataset.refined === "true"
+                    ? `${grid.children.length} matching concerts loaded`
+                    : button.dataset.total
                     ? `Showing ${grid.children.length} of ${button.dataset.total}`
                     : `${grid.children.length} shown`;
             }

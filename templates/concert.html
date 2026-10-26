@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ concert.title }} — Encore{% endblock %}
+{% block content %}
+<section class="profile-shell">
+    <a class="back-link" href="{{ url_for('profile', q=concert.artist or concert.title) }}">← My library</a>
+    <p class="eyebrow"><span></span> Stored concert</p>
+    <h1 class="profile-title">{{ concert.title }}</h1>
+    <p class="snapshot-meta">Collected {{ concert.retrieved_at.strftime('%b %d, %Y %H:%M UTC') }}. This is stored provider information; check the source for current details.</p>
+    <div class="catalog-detail">{% include "_event_cards.html" %}</div>
+</section>
+{% endblock %}

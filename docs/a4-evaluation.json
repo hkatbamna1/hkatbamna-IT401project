@@ -1,0 +1,371 @@
+{
+  "dataset": "18 synthetic, frozen concert fixtures in an isolated SQLite database",
+  "retrieved_at": "2026-10-24T12:00:00Z",
+  "evaluated_at": "2026-10-26T06:29:49.491837+00:00",
+  "scope": "Current private SavedConcert retrieval and owner-scoped My library; no shared-catalog retrieval.",
+  "method": "Case-normalized contiguous phrase matching; OR across fields, AND across filters.",
+  "precision_scope": "All result pages, not only the first 12 results.",
+  "queries": [
+    {
+      "query": "Hozier",
+      "filters": {},
+      "expected": [
+        "h01",
+        "h02",
+        "h03",
+        "h04",
+        "h05",
+        "h06",
+        "h07",
+        "h08",
+        "h09",
+        "h10",
+        "h11",
+        "h12",
+        "h13",
+        "h14"
+      ],
+      "intent": "Find performances by Hozier; a tribute performed by someone else is irrelevant.",
+      "top_expected": [
+        "h01",
+        "h02",
+        "h03"
+      ],
+      "returned": [
+        {
+          "id": "h01",
+          "title": "Hozier",
+          "artist": "Hozier",
+          "venue": "Hollywood Bowl",
+          "source": "jambase"
+        },
+        {
+          "id": "h03",
+          "title": "Hozier",
+          "artist": "Hozier",
+          "venue": "The Wiltern",
+          "source": "setlistfm"
+        },
+        {
+          "id": "h02",
+          "title": "Hozier Live",
+          "artist": "Hozier",
+          "venue": "Greek Theatre",
+          "source": "jambase"
+        },
+        {
+          "id": "h04",
+          "title": "Hozier Seattle Night 04",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h05",
+          "title": "Hozier Seattle Night 05",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h06",
+          "title": "Hozier Seattle Night 06",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h07",
+          "title": "Hozier Seattle Night 07",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h08",
+          "title": "Hozier Seattle Night 08",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h09",
+          "title": "Hozier Seattle Night 09",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h10",
+          "title": "Hozier Seattle Night 10",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h11",
+          "title": "Hozier Seattle Night 11",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h12",
+          "title": "Hozier Seattle Night 12",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h13",
+          "title": "Hozier Seattle Night 13",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "h14",
+          "title": "Hozier Seattle Night 14",
+          "artist": "Hozier",
+          "venue": "Seattle Fixture Hall",
+          "source": "jambase"
+        },
+        {
+          "id": "tribute",
+          "title": "Hozier tribute night",
+          "artist": "Echo Collective",
+          "venue": "Troubadour",
+          "source": "jambase"
+        }
+      ],
+      "false_positives": [
+        "tribute"
+      ],
+      "missed": [],
+      "precision": 0.9333333333333333,
+      "recall": 1.0,
+      "useful_result_in_top_three": true
+    },
+    {
+      "query": "The Wiltern",
+      "filters": {},
+      "expected": [
+        "h03",
+        "radiohead",
+        "muse"
+      ],
+      "intent": "Find concerts at this venue.",
+      "top_expected": [
+        "h03",
+        "radiohead",
+        "muse"
+      ],
+      "returned": [
+        {
+          "id": "h03",
+          "title": "Hozier",
+          "artist": "Hozier",
+          "venue": "The Wiltern",
+          "source": "setlistfm"
+        },
+        {
+          "id": "muse",
+          "title": "Muse",
+          "artist": "Muse",
+          "venue": "The Wiltern",
+          "source": "jambase"
+        },
+        {
+          "id": "radiohead",
+          "title": "Radiohead",
+          "artist": "Radiohead",
+          "venue": "The Wiltern",
+          "source": "setlistfm"
+        }
+      ],
+      "false_positives": [],
+      "missed": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "useful_result_in_top_three": true
+    },
+    {
+      "query": "Hozier",
+      "filters": {
+        "location": "Los Angeles",
+        "source": "setlistfm"
+      },
+      "expected": [
+        "h03"
+      ],
+      "intent": "Find collected Setlist.fm Hozier performances in Los Angeles.",
+      "top_expected": [
+        "h03"
+      ],
+      "returned": [
+        {
+          "id": "h03",
+          "title": "Hozier",
+          "artist": "Hozier",
+          "venue": "The Wiltern",
+          "source": "setlistfm"
+        }
+      ],
+      "false_positives": [],
+      "missed": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "useful_result_in_top_three": true
+    },
+    {
+      "query": "A Moon Shaped Pool",
+      "filters": {},
+      "expected": [
+        "radiohead"
+      ],
+      "intent": "Find a concert by its tour name.",
+      "top_expected": [
+        "radiohead"
+      ],
+      "returned": [
+        {
+          "id": "radiohead",
+          "title": "Radiohead",
+          "artist": "Radiohead",
+          "venue": "The Wiltern",
+          "source": "setlistfm"
+        }
+      ],
+      "false_positives": [],
+      "missed": [],
+      "precision": 1.0,
+      "recall": 1.0,
+      "useful_result_in_top_three": true
+    },
+    {
+      "query": "RHCP",
+      "filters": {},
+      "expected": [
+        "rhcp"
+      ],
+      "intent": "Find Red Hot Chili Peppers using the abbreviation; exposes absent synonym expansion.",
+      "top_expected": [
+        "rhcp"
+      ],
+      "returned": [],
+      "false_positives": [],
+      "missed": [
+        "rhcp"
+      ],
+      "precision": null,
+      "recall": 0.0,
+      "useful_result_in_top_three": false
+    },
+    {
+      "query": "zzzx-no-concert",
+      "filters": {},
+      "expected": [],
+      "intent": "Verify an honest no-results state.",
+      "top_expected": [],
+      "returned": [],
+      "false_positives": [],
+      "missed": [],
+      "precision": null,
+      "recall": null,
+      "useful_result_in_top_three": null
+    }
+  ],
+  "observations": [
+    "Hozier returns all 14 relevant fixtures plus one tribute; precision 14/15 and recall 14/14.",
+    "Exact artist matches outrank the tribute's partial title match.",
+    "Venue, tour and combined provider/city cases retrieve all judged relevant fixtures.",
+    "RHCP misses Red Hot Chili Peppers because substring matching has no abbreviation dictionary.",
+    "No-results precision is undefined when nothing is returned; recall is undefined when no relevant records exist.",
+    "An artist-alias dictionary could improve recall; distinguishing performer intent from title mentions could improve precision.",
+    "This small controlled evaluation does not measure recall across provider catalogs or uncollected concerts."
+  ],
+  "library_queries": [
+    {
+      "query": "Hozier",
+      "expected_saved_titles": [
+        "Concert comparison"
+      ],
+      "returned": [
+        {
+          "title": "Concert comparison",
+          "matching_concerts": 15
+        }
+      ],
+      "passed": true
+    },
+    {
+      "query": "The Wiltern",
+      "expected_saved_titles": [
+        "Concert comparison"
+      ],
+      "returned": [
+        {
+          "title": "Concert comparison",
+          "matching_concerts": 3
+        }
+      ],
+      "passed": true
+    },
+    {
+      "query": "Bring friends",
+      "expected_saved_titles": [
+        "Concert comparison"
+      ],
+      "returned": [
+        {
+          "title": "Concert comparison",
+          "matching_concerts": 18
+        }
+      ],
+      "passed": true
+    },
+    {
+      "query": "Remember earplugs",
+      "expected_saved_titles": [
+        "Weekend ideas"
+      ],
+      "returned": [
+        {
+          "title": "Weekend ideas",
+          "matching_concerts": 0
+        }
+      ],
+      "passed": true
+    },
+    {
+      "query": "Private exclusive",
+      "expected_saved_titles": [],
+      "returned": [],
+      "passed": true
+    },
+    {
+      "query": "zzzx-no-concert",
+      "expected_saved_titles": [],
+      "returned": [],
+      "passed": true
+    }
+  ],
+  "http_order_checked": true,
+  "real_george_clanton_observation": {
+    "query": "George Clanton",
+    "acquired_artist_query_records": 26,
+    "saved_concert_keyword_matches": 25,
+    "missed_acquired_records": [
+      {
+        "id": "jambase:16846494",
+        "title": "ideasforconversations at Revolution Hall",
+        "artist": "ideasforconversations",
+        "venue": "Revolution Hall",
+        "supporting_artists": [
+          "George Clanton"
+        ]
+      }
+    ],
+    "note": "Artist-query acquisitions can contain a searched performer only in the supporting lineup, which is not a searchable field."
+  }
+}

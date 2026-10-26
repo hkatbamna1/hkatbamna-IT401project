@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Your search activity — Encore{% endblock %}
+{% block content %}
+<section class="profile-shell">
+    <a class="back-link" href="{{ url_for('profile') }}">← My library</a>
+    <p class="eyebrow"><span></span> Your Encore</p>
+    <h1 class="profile-title">Your search<br><em>activity.</em></h1>
+    <p class="hero-intro">Your library searches, including searches with no matches. Moving between result pages does not create another activity entry.</p>
+    <div class="activity-list">
+    {% for event in events.items %}
+        <article class="history-card">
+            <p class="result-kicker">{{ event.created_at.strftime('%b %d, %Y %H:%M:%S') }} UTC</p>
+            <h2>{{ event.query }}</h2>
+            <p>{{ event.result_count }} matching {{ 'result' if event.result_count == 1 else 'results' }} · Sort: {{ event.sort }}</p>
+            <dl>{% for key, value in event.filters.items() if value and not key.startswith('_') %}<div><dt>{{ key|replace('_', ' ')|title }}</dt><dd>{{ value }}</dd></div>{% endfor %}</dl>
+            {% set replay = event.filters.copy() %}{% set scope = replay.pop('_scope', 'library') %}
+            {% if scope.startswith('saved:') %}<a class="history-link" href="{{ url_for('saved_search', search_id=scope.split(':')[1]|int, q=event.query, sort=event.sort, **replay) }}">Run this search again →</a>
+            {% else %}<a class="history-link" href="{{ url_for('profile', q=event.query, sort=event.sort, **replay) }}">Run this search again →</a>{% endif %}
+        </article>
+    {% else %}<div class="search-message">No search activity yet. <a href="{{ url_for('profile') }}">Search your library</a>.</div>{% endfor %}
+    </div>
+    {% if events.pages %}<nav class="library-pagination" aria-label="Search activity pages">
+        {% if events.has_prev %}<a href="{{ url_for('search_activity', page=events.prev_num) }}">← Previous</a>{% endif %}
+        <span>Page {{ events.page }} of {{ events.pages }}</span>
+        {% if events.has_next %}<a href="{{ url_for('search_activity', page=events.next_num) }}">Next →</a>{% endif %}
+    </nav>{% endif %}
+</section>
+{% endblock %}
