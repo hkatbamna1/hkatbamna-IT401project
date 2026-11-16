@@ -9,6 +9,8 @@
         <p class="hero-intro">Welcome, {{ user.title }}. Your saved searches, concert discoveries, and personal notes are here.</p></div>
         <div class="library-stat"><strong>{{ total }}</strong><span>saved {{ 'search' if total == 1 else 'searches' }}</span></div>
     </div>
+    {% include "_recommendation_form.html" %}
+    {% if recommendation_result %}{% include "_recommendation_results.html" %}{% endif %}
     <div class="library-explainer">Searches from <a href="{{ url_for('index') }}">Find new concerts</a> save here automatically while you are signed in. Reopen your results, add notes, or rename a search.</div>
     <form method="get" action="{{ url_for('profile') }}" class="catalog-form" role="search">
         <div class="catalog-keyword"><label for="library-query">Search your library</label>
@@ -16,7 +18,7 @@
             <p>Search only your saved searches and the concerts within them.</p>
         </div>
         {{ concert_filters(values, sorts, sources, prefix='library', default_sort='recent') }}
-        <div class="catalog-actions"><button class="action-button" type="submit">Search library</button><a href="{{ url_for('profile') }}">Clear search &amp; filters</a><a href="{{ url_for('search_activity') }}">Search activity</a></div>
+        <div class="catalog-actions"><button class="action-button" type="submit">Search library</button><a href="{{ url_for('profile') }}">Clear search &amp; filters</a><a href="{{ url_for('search_activity') }}">Search activity</a><a href="{{ url_for('recommendation_history') }}">Shortlist history</a></div>
     </form>
     {% if initial_search %}<p class="search-message" role="status">Enter a keyword or use filters to search your library. Your saved searches are shown below.</p>{% endif %}
     <div class="library-toolbar"><h2>Saved searches</h2><span class="result-count">{{ searches.total }} {{ 'search' if searches.total == 1 else 'searches' }}{% if query %} found for “{{ query }}”{% endif %}</span></div>
@@ -70,4 +72,5 @@ document.querySelectorAll('.cancel-edit').forEach((button) => {
     });
 });
 </script>
+<script src="{{ url_for('static', filename='recommendations.js') }}" defer></script>
 {% endblock %}

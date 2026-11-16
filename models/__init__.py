@@ -42,6 +42,8 @@ class SavedSearch(RecordMetadata, db.Model):
     last_viewed_at = db.Column(db.DateTime, nullable=False, default=utcnow, index=True)
     user = db.relationship("User", back_populates="searches")
     concerts = db.relationship("SavedConcert", cascade="all, delete-orphan", back_populates="saved_search")
+    generations = db.relationship("RecommendationGeneration", cascade="all, delete-orphan",
+                                  back_populates="saved_search")
 
 
 class CachedResult(RecordMetadata, db.Model):
@@ -102,3 +104,22 @@ class SearchEvent(db.Model):
     filters = db.Column(db.JSON, nullable=False)
     sort = db.Column(db.String(20), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("encore_users.id"), index=True)
+
+
+class RecommendationGeneration(db.Model):
+    """Validated intelligence; ownership follows the parent private saved search."""
+    __tablename__ = "encore_recommendation_generations"
+    __table_args__ = (
+        db.Index("ix_encore_generation_search_time", "saved_search_id", "generated_at"),
+        {"mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_bin"},
+    )
+    id = db.Column(db.Integer, primary_key=True)
+    saved_search_id = db.Column(db.Integer, db.ForeignKey("encore_saved_searches.id", ondelete="CASCADE"), nullable=False)
+    user_request = db.Column(db.Text, nullable=False)
+    retrieval_options = db.Column(db.JSON, nullable=False)
+    source_context = db.Column(db.JSON, nullable=False)
+    output = db.Column(db.JSON, nullable=False)
+    prompt_version = db.Column(db.String(40), nullable=False)
+    model = db.Column(db.String(120), nullable=False)
+    generated_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+    saved_search = db.relationship("SavedSearch", back_populates="generations")

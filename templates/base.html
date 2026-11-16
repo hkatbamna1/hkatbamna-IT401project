@@ -17,7 +17,7 @@
             <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>Discover</a>
             <a href="{{ url_for('about') }}" {% if request.endpoint == 'about' %}aria-current="page"{% endif %}>About</a>
             {% if session.get('user') %}
-                <a href="{{ url_for('profile') }}" {% if request.endpoint in ['profile', 'saved_search', 'search_activity', 'concert_detail'] %}aria-current="page"{% endif %}>My library</a>
+                <a href="{{ url_for('profile') }}" {% if request.endpoint in ['profile', 'saved_search', 'search_activity', 'concert_detail', 'generate_concert_recommendations', 'recommendation_history', 'recommendation_detail'] %}aria-current="page"{% endif %}>My library</a>
                 <span class="signed-in-name">{{ session['user']['name'] }}</span>
                 <form class="logout-form" action="{{ url_for('logout') }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ session.get('logout_csrf', '') }}">

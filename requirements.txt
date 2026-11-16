@@ -5,5 +5,7 @@ SQLAlchemy>=2.0,<3
 PyMySQL>=1.1,<2
 Authlib>=1.8,<2
 requests>=2.31
+google-genai>=1.56,<2
+httpx>=0.28,<1
 python-dotenv>=1.0
 pytest>=8.0

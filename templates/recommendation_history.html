@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Shortlist history — Encore{% endblock %}
+{% block content %}
+<section class="profile-shell">
+    <a class="back-link" href="{{ url_for('profile', recommend_from=selected_search.id) + '#recommendations' if selected_search else url_for('profile') }}">&larr; My library</a>
+    <p class="eyebrow"><span></span> Your recommendations, kept</p>
+    <h1 class="profile-title">Shortlist history.</h1>
+    <p class="hero-intro">{% if selected_search %}Recommendations for {{ selected_search.title }}.{% else %}Revisit the concert options you compared.{% endif %} Opening a saved shortlist does not use another Gemini request.</p>
+    <div class="library-toolbar"><h2>{{ results.total }} saved {{ 'shortlist' if results.total == 1 else 'shortlists' }}</h2>{% if selected_search %}<a class="history-link" href="{{ url_for('recommendation_history') }}">Show all shortlists &rarr;</a>{% endif %}</div>
+    <div class="history-grid">
+    {% for generation in results.items %}<article class="history-card recommendation-history-card">
+        <p class="result-kicker">{{ generation.generated_at.strftime('%b %d, %Y %H:%M') }} UTC</p>
+        <h3><a href="{{ url_for('recommendation_detail', generation_id=generation.id) }}">{{ generation.saved_search.title }}</a></h3>
+        <p>{{ (generation.user_request or 'No extra preferences. Compared matching saved listings.')|truncate(180, true) }}</p>
+        <a class="history-link" href="{{ url_for('recommendation_detail', generation_id=generation.id) }}">Open saved shortlist &rarr;</a>
+    </article>{% else %}<p class="search-message">No shortlists saved yet. Choose a saved search in the recommendation panel on <a href="{{ url_for('profile') }}">My library</a> and select Recommend concerts.</p>{% endfor %}
+    </div>
+    {% include "_results_pagination.html" %}
+</section>
+{% endblock %}

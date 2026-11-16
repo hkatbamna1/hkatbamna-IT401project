@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Saved shortlist — Encore{% endblock %}
+{% block content %}
+<section class="profile-shell recommendation-detail">
+    <nav class="recommendation-breadcrumbs" aria-label="Shortlist navigation"><a href="{{ return_url }}">&larr; Back to My library</a><a href="{{ url_for('recommendation_history') }}">All shortlists</a></nav>
+    <p class="eyebrow"><span></span> Saved shortlist</p>
+    <h1 class="profile-title">{{ generation.saved_search.title }}</h1>
+    <p class="snapshot-meta">Generated {{ recommendation_metadata.generated_label }} &middot; Saved to your private history</p>
+    <div class="recommendation-preferences"><strong>Your preferences</strong><p>{{ generation.user_request or 'No extra preferences. Compared the matching saved listings.' }}</p></div>
+    <div class="library-explainer">This is a saved recommendation result. Dates and availability may have changed. Confirm the details with the original listing before making plans. Opening this page does not make a new Gemini request.</div>
+    {% include "_recommendation_results.html" %}
+    <div class="catalog-actions"><a class="action-button" href="{{ return_url }}">Refine &amp; recommend again</a><a href="{{ url_for('recommendation_history', search_id=generation.saved_search_id) }}">Shortlist history for this search &rarr;</a></div>
+</section>
+{% endblock %}

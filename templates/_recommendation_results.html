@@ -1,0 +1,31 @@
+<section class="recommendation-output" aria-labelledby="shortlist-heading">
+    <div class="recommendation-output-heading"><p class="eyebrow"><span></span> Based on your saved discoveries</p>
+        <h2 id="shortlist-heading">Your shortlist.</h2>
+        <p>Compared {{ recommendation_result.considered_count }} of {{ recommendation_result.matching_count }} eligible matching concerts{% if recommendation_result.truncated %}; only the first {{ recommendation_result.considered_count }} in your selected order were considered{% endif %}.</p>
+    </div>
+    {% if recommendation_result.cards %}<div class="recommendation-grid">
+    {% for card in recommendation_result.cards %}
+        <article class="recommendation-card">
+            <div class="recommendation-card-top"><span class="recommendation-rank">Choice {{ '%02d'|format(card.rank) }}</span><span class="source-badge">{{ card.source_label }}</span></div>
+            <p class="recommendation-date">{{ card.date_label }}</p>
+            <h3>{{ card.title }}</h3>
+            {% if card.artist and card.artist != card.title %}<p class="recommendation-artist">{{ card.artist }}</p>{% endif %}
+            <p class="recommendation-place">{{ card.venue }}{% if card.location %}<br>{{ card.location }}{% endif %}</p>
+            <div class="recommendation-reason"><h4>Why this fits</h4><p>{{ card.explanation }}</p></div>
+            <dl class="recommendation-evidence">{% for fact in card.supporting_facts %}<div><dt>{{ fact.label }}</dt><dd>{{ fact.value }}</dd></div>{% endfor %}</dl>
+            <div class="recommendation-source">
+                {% if card.source_url %}<a href="{{ card.source_url }}" target="_blank" rel="noopener noreferrer">View original listing <span aria-hidden="true">&nearr;</span></a>{% endif %}
+                <p>Collected {{ card.retrieved_label }}</p>
+            </div>
+        </article>
+    {% endfor %}
+    </div>{% else %}<p class="search-message">These preferences did not produce a suitable shortlist. Review the limitations below and try different preferences or filters.</p>{% endif %}
+    {% if recommendation_result.limitations %}<aside class="recommendation-limitations" aria-label="Recommendation limitations">
+        <h3>Keep in mind</h3><ul>{% for limitation in recommendation_result.limitations %}<li>{{ limitation }}</li>{% endfor %}</ul>
+    </aside>{% endif %}
+    <details class="recommendation-details"><summary>View structured response</summary><pre><code>{{ recommendation_result.structured_output }}</code></pre></details>
+    <details class="recommendation-details"><summary>Generation details</summary>
+        <dl class="recommendation-evidence"><div><dt>Generated</dt><dd>{{ recommendation_metadata.generated_label }}</dd></div>
+            <div><dt>Model</dt><dd>{{ recommendation_metadata.model }}</dd></div><div><dt>Prompt version</dt><dd>{{ recommendation_metadata.prompt_version }}</dd></div></dl>
+    </details>
+</section>

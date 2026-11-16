@@ -205,3 +205,33 @@ h1 em,h2 em { color:var(--coral); font-weight:500; }
 @media(max-width:1100px) { .concert-filters { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:760px) { .catalog-form { padding:20px; }.catalog-actions { gap:16px; }.library-pagination { gap:16px; font-size:13px; }.library-toolbar { overflow-wrap:anywhere; } }
 @media(max-width:440px) { .concert-filters,.discovery-refinements .concert-filters { grid-template-columns:1fr; } }
+
+.recommendation-panel { margin:0 0 40px; padding:32px; border:1px solid var(--line); border-top:4px solid var(--violet); background:var(--white); scroll-margin-top:110px; }
+.recommendation-panel-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+.recommendation-panel h2,.recommendation-output h2 { margin:0; font-size:clamp(30px,3.6vw,46px); line-height:1.1; }
+.recommendation-panel .eyebrow,.recommendation-output .eyebrow { margin-bottom:14px; }
+.recommendation-intro { max-width:780px; margin:20px 0 26px; font-size:14px; line-height:1.7; color:var(--muted); }
+.recommendation-form label { font-size:14px; font-weight:700; }.recommendation-form label span { color:var(--muted); font-weight:400; }
+.recommendation-form select { display:block; width:100%; min-width:0; margin-top:8px; padding:12px; border:1px solid var(--line); background:var(--white); color:var(--ink); font:14px "Segoe UI",sans-serif; }
+.recommendation-preference-label { display:block; margin-top:22px; }
+.recommendation-filter-controls { margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }.recommendation-filter-controls summary { cursor:pointer; margin-bottom:18px; font-size:13px; font-weight:700; }.recommendation-filter-controls summary span { color:var(--muted); font-weight:400; }.recommendation-filter-controls .concert-filters { margin-top:20px; }
+.recommendation-form textarea { resize:vertical; min-height:100px; }.recommendation-form textarea:focus-visible { outline:3px solid var(--violet); outline-offset:2px; }
+.recommendation-form-actions { display:flex; align-items:center; flex-wrap:wrap; gap:18px; margin-top:22px; }
+.recommendation-request-note { max-width:380px; font-size:12px; line-height:1.6; color:var(--muted); }
+.action-button:disabled { cursor:wait; opacity:.65; }.recommendation-loading { margin:20px 0 0; font-size:14px; color:var(--violet); }
+.recent-recommendations { display:flex; align-items:center; flex-wrap:wrap; gap:12px 20px; margin-top:24px; padding-top:20px; border-top:1px solid var(--line); font-size:12px; }.recent-recommendations>span { color:var(--muted); }.recent-recommendations a { font-weight:700; }
+.recommendation-feedback { margin:24px 0; padding:20px; border-left:4px solid var(--coral); background:var(--paper); line-height:1.6; overflow-wrap:anywhere; }.recommendation-feedback p { margin:8px 0 0; font-size:14px; }.recommendation-feedback:focus { outline:2px solid var(--coral); outline-offset:3px; }.recommendation-warning { border-color:var(--violet); }
+.recommendation-output { margin:36px 0 48px; }.recommendation-output-heading { margin-bottom:24px; }.recommendation-output-heading>p:last-child { margin:16px 0 0; font-size:14px; line-height:1.6; color:var(--muted); }
+.recommendation-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; align-items:stretch; }
+.recommendation-card { display:flex; flex-direction:column; min-width:0; padding:26px; border:1px solid var(--line); border-top:5px solid var(--violet); background:var(--white); overflow-wrap:anywhere; }.recommendation-card:nth-child(2) { border-top-color:var(--coral); }.recommendation-card:nth-child(3) { border-top-color:var(--lime); }
+.recommendation-card-top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:26px; }.recommendation-rank { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.09em; }.recommendation-card-top .source-badge { margin:0; }
+.recommendation-date { font-size:12px; color:var(--muted); }.recommendation-card h3 { margin:10px 0; font:32px/1.12 Georgia,serif; }.recommendation-artist { margin:0 0 10px; font-size:14px; }.recommendation-place { margin:0 0 24px; font-size:14px; line-height:1.7; }
+.recommendation-reason { padding-top:20px; border-top:1px solid var(--line); }.recommendation-reason h4 { margin:0 0 10px; font-size:13px; }.recommendation-reason p { margin:0; font-size:14px; line-height:1.7; white-space:pre-wrap; }
+.recommendation-evidence { margin:22px 0; }.recommendation-evidence>div { margin:10px 0; }.recommendation-evidence dt { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em; }.recommendation-evidence dd { margin:4px 0 0; font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
+.recommendation-source { margin-top:auto; padding-top:20px; border-top:1px solid var(--line); }.recommendation-source a { font-size:13px; font-weight:700; }.recommendation-source p { margin:12px 0 0; color:var(--muted); font-size:11px; line-height:1.6; }
+.recommendation-limitations { margin:24px 0; padding:24px; background:rgba(113,87,220,.07); }.recommendation-limitations h3 { margin:0 0 10px; font-size:18px; }.recommendation-limitations ul { margin:0; padding-left:20px; }.recommendation-limitations li { margin:8px 0; font-size:14px; line-height:1.6; overflow-wrap:anywhere; }
+.recommendation-details { border-top:1px solid var(--line); padding:18px 0; }.recommendation-details summary { cursor:pointer; font-size:13px; font-weight:700; }.recommendation-details pre { max-width:100%; margin:20px 0 0; padding:20px; overflow:auto; background:var(--ink); color:var(--white); font:12px/1.6 Consolas,monospace; }.recommendation-details code { white-space:pre-wrap; overflow-wrap:anywhere; }
+.recommendation-breadcrumbs { display:flex; flex-wrap:wrap; gap:16px 28px; margin-bottom:32px; font-size:13px; }.recommendation-preferences { margin:24px 0; line-height:1.7; }.recommendation-preferences strong { font-size:13px; }.recommendation-preferences p { margin:8px 0 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+.recommendation-detail .catalog-actions a.action-button { text-decoration:none; }
+@media(max-width:1050px) { .recommendation-grid { grid-template-columns:1fr; }.recommendation-card { display:block; }.recommendation-source { margin-top:24px; } }
+@media(max-width:640px) { .recommendation-panel { padding:22px 18px; }.recommendation-form-actions { align-items:stretch; flex-direction:column; }.recommendation-form-actions button { width:100%; }.recommendation-card { padding:24px 20px; } }

@@ -19,6 +19,7 @@
         {{ concert_filters(values, sorts, sources, prefix='saved') }}
         <div class="catalog-actions"><button class="action-button" type="submit">Apply filters</button><a href="{{ url_for('saved_search', search_id=saved.id) }}">Clear search &amp; filters</a></div>
     </form>
+    <p class="library-activity-link">Want help choosing? <a href="{{ url_for('profile', recommend_from=saved.id) }}#recommendations">Recommend concerts in My library &rarr;</a></p>
     <details class="search-editor">
         <summary>Rename, add notes, or delete</summary>
         <form method="post" action="{{ url_for('edit_search', search_id=saved.id) }}">

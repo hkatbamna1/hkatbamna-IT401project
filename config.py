@@ -7,6 +7,7 @@ from sqlalchemy.engine import URL
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
+DEFAULT_AI_MODEL = "gemini-3.5-flash-lite"
 
 
 class Config:
@@ -36,7 +37,11 @@ class Config:
     # External API keys / service config
     JAMBASE_API_KEY = os.environ.get("JAMBASE_API_KEY")
     SETLISTFM_API_KEY = os.environ.get("SETLISTFM_API_KEY")
-    AI_SERVICE_API_KEY = os.environ.get("AI_SERVICE_API_KEY")
+    AI_SERVICE_API_KEY = (os.environ.get("AI_SERVICE_API_KEY") or "").strip() or os.environ.get("GEMINI_API_KEY")
+    AI_SERVICE_MODEL = os.environ.get("AI_SERVICE_MODEL", DEFAULT_AI_MODEL)
+    # Parse only when the AI service is used, so bad AI settings do not break search.
+    AI_SERVICE_TIMEOUT_SECONDS = os.environ.get("AI_SERVICE_TIMEOUT_SECONDS", "20")
+    AI_SERVICE_MAX_OUTPUT_TOKENS = os.environ.get("AI_SERVICE_MAX_OUTPUT_TOKENS", "4096")
 
 
 class DevelopmentConfig(Config):

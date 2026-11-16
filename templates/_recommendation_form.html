@@ -1,0 +1,44 @@
+{% from "_search_controls.html" import concert_filters %}
+<section class="recommendation-panel" id="recommendations" aria-labelledby="recommendation-heading">
+    <div class="recommendation-panel-heading">
+        <div><p class="eyebrow"><span></span> A little help choosing</p>
+            <h2 id="recommendation-heading">Find your next night out.</h2></div>
+        <a class="history-link" href="{{ url_for('recommendation_history') }}">Shortlist history &rarr;</a>
+    </div>
+    <p class="recommendation-intro" id="recommendation-help">Choose a saved search. Gemini compares up to {{ recommendation_candidate_limit }} of its upcoming concerts and recommends up to three. Only concert facts and the preferences you enter below are sent.</p>
+    {% if recommendation_outcome %}
+    <div class="recommendation-feedback{% if recommendation_outcome.code == 'storage_failed' %} recommendation-warning{% endif %}" role="alert" tabindex="-1" data-recommendation-feedback>
+        <strong>{% if recommendation_outcome.has_output %}Your shortlist is available below.{% elif recommendation_outcome.code == 'empty_context' %}No upcoming matches to compare.{% elif recommendation_outcome.code == 'in_progress' %}A shortlist request is already running.{% else %}Recommendations could not be completed.{% endif %}</strong>
+        <p>{{ recommendation_outcome.message }}</p>
+        <p>Your saved searches are still below.</p>
+    </div>
+    {% endif %}
+    <form method="post" action="{{ url_for('generate_concert_recommendations', page=options.page, **options.url_values()) }}" class="recommendation-form" data-recommendation-form aria-describedby="recommendation-help">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="recommendation_token" value="{{ recommendation_token }}">
+        <label for="recommendation-source">Recommend from</label>
+        <select id="recommendation-source" name="saved_search_id" required>
+            <option value="">Choose a saved search</option>
+            {% for source in recommendation_sources %}<option value="{{ source.id }}"{% if source.id == recommendation_selected_id|string %} selected{% endif %}>{{ source.title }}</option>{% endfor %}
+        </select>
+        <label class="recommendation-preference-label" for="recommendation-preferences">What matters to you? <span>(optional)</span></label>
+        <textarea id="recommendation-preferences" name="preferences" maxlength="1000" rows="3" placeholder="Prefer a particular venue or date? Tell us what to prioritize." aria-describedby="recommendation-preference-hint">{{ recommendation_preferences }}</textarea>
+        <p class="control-hint" id="recommendation-preference-hint">Preferences can only be assessed when the saved listings contain supporting facts. These concert choices are separate from the library search below.</p>
+        <details class="recommendation-filter-controls"{% if recommendation_values.get('q') or recommendation_values.get('source') or recommendation_values.get('location') or recommendation_values.get('date_from') or recommendation_values.get('date_to') or recommendation_values.get('sort', 'relevance') != 'relevance' %} open{% endif %}>
+            <summary>Narrow these concerts <span>(optional)</span></summary>
+            <label for="recommendation-query">Concert keyword</label>
+            <input id="recommendation-query" type="search" name="q" maxlength="160" value="{{ recommendation_values.get('q', '') }}" placeholder="Artist, concert title, venue, or tour">
+            {{ concert_filters(recommendation_values, concert_sorts, sources, prefix='recommendation-filter') }}
+        </details>
+        <div class="recommendation-form-actions">
+            <button class="action-button" type="submit" data-recommendation-submit{% if not recommendation_token or not recommendation_sources %} disabled{% endif %}>Recommend concerts <span aria-hidden="true">&nearr;</span></button>
+            <span class="recommendation-request-note">One request per submission. Opening a saved shortlist uses no new request.</span>
+        </div>
+        {% if not recommendation_sources %}<p class="control-hint">Your library is empty. <a href="{{ url_for('index') }}">Find concerts</a> while signed in to save your first search.</p>
+        {% elif not recommendation_token %}<p class="control-hint">Recommendations are busy. Reload this page in a moment.</p>{% endif %}
+        <p class="recommendation-loading" role="status" aria-live="polite" data-recommendation-loading hidden>Comparing your saved concerts&hellip; This may take a moment.</p>
+    </form>
+    {% if recent_generations %}<div class="recent-recommendations"><span>Recent shortlists</span>
+        {% for item in recent_generations %}<a href="{{ url_for('recommendation_detail', generation_id=item.id) }}">{{ item.generated_at.strftime('%b %d, %H:%M') }} UTC</a>{% endfor %}
+    </div>{% endif %}
+</section>
