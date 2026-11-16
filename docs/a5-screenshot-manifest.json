@@ -1,0 +1,84 @@
+{
+  "captured_at": "2026-11-16T20:38:59.001219+00:00",
+  "dataset": "Frozen fictional A5 evaluation corpus",
+  "live_api_calls": 0,
+  "hosted_database_access": false,
+  "source_report": "docs/a5-evaluation-live.json",
+  "output_fingerprint": "75031609722e810b29202a2b71e9a442f8e1721f7d7b92a5804f1c973bd6adf5",
+  "preview_metadata": "Stored row reconstructed from validated report; timestamp uses evaluated_at; model identifies recorded request, not provider-returned version.",
+  "screenshots": [
+    {
+      "file": "library.png",
+      "caption": "My library: recommendation source, preferences and existing search",
+      "path": "/profile?recommend_from=1&rec_location=Fixture+City&rec_sort=alphabetical",
+      "dataset": "Fictional evaluation account; no generation submitted.",
+      "width": 1440,
+      "height": 1360,
+      "sha256": "a1c60d11d43e1f0ff69d2da0c1f2a42b8c8ab2f733a31c96ea4a79045557de46"
+    },
+    {
+      "file": "search-results.png",
+      "caption": "Existing saved-concert search: venue keyword and earliest-date ordering",
+      "path": "/profile/searches/1?q=Harbor+Hall&sort=date_asc&page=1",
+      "dataset": "Six matching fictional Harbor Hall concerts; ordinary retrieval.",
+      "width": 1440,
+      "height": 1180,
+      "sha256": "6fe77d3731702b6cc71aa6afc52272090e531104aae06c4a7214d067bb17d926"
+    },
+    {
+      "file": "generated-intelligence.png",
+      "caption": "Generated shortlist: three choices, reasons and exact supporting facts",
+      "path": "/profile/recommendations/1",
+      "dataset": "Recorded live v3 output replayed against its original fictional source context.",
+      "width": 1440,
+      "height": 1180,
+      "sha256": "320499903779b29c29e1a97f4856f2bd4235db54199269354bf00b5b9501560b"
+    },
+    {
+      "file": "structured-output.png",
+      "caption": "Expanded structured response (beginning); complete JSON retained in evaluation report",
+      "path": "/profile/recommendations/1",
+      "dataset": "Exact locally validated JSON from the recorded v3 model response.",
+      "width": 1440,
+      "height": 1180,
+      "sha256": "6b9c0124c80ab3c6efda52c2718d2c4df76172cc6b26dac1fe993546a63e268e"
+    },
+    {
+      "file": "stored-results.png",
+      "caption": "Private shortlist history: reopen stored output without another model request",
+      "path": "/profile/recommendations",
+      "dataset": "One validated preview row reconstructed from the recorded v3 response.",
+      "width": 1440,
+      "height": 1180,
+      "sha256": "373603b64871271653bba7bb4ad5f36cdeef4bdbd9a0469fa2bfbea06467f8e5"
+    },
+    {
+      "file": "mobile-shortlist.png",
+      "caption": "Mobile saved shortlist: stacked concert choices and source evidence",
+      "path": "/profile/recommendations/1",
+      "dataset": "Same recorded v3 response; first choice shown at mobile width.",
+      "width": 390,
+      "height": 1000,
+      "sha256": "9521902ef5521317737da6555f38f99d5abe512197a43cfe45abfd2b761db232"
+    },
+    {
+      "file": "error-handling.png",
+      "caption": "Quota failure: safe message and preserved source, preferences and library",
+      "path": "/profile/recommendations?page=1&q=&source=&location=&date_from=&date_to=&sort=recent",
+      "dataset": "Simulated SDK HTTP 429; no live request, retry, or new saved generation.",
+      "width": 1440,
+      "height": 1180,
+      "sha256": "9144e12fef4a75841436f4252af3956994aabbf671db015d86df9376f5307bd6"
+    }
+  ],
+  "checks": {
+    "browser_script_errors": [],
+    "horizontal_overflow": false,
+    "structured_output_matches_report": true,
+    "history_reopens_without_model_call": true,
+    "quota_status": 429,
+    "quota_preserves_input_and_library": true,
+    "quota_creates_no_history_row": true,
+    "mocked_http_calls": 1
+  }
+}

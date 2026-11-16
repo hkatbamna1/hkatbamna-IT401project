@@ -4,7 +4,6 @@ Replays reviewed live model output against frozen fictional records in temporary
 in-memory SQLite. Only the quota-error capture submits a form, using an SDK HTTP
 mock. Existing evaluation reports are read, never rerun or overwritten.
 """
-import copy
 import hashlib
 import html
 import json
@@ -151,7 +150,9 @@ def capture(report):
 
                 def shot(filename, caption, provenance, selector=None):
                     if selector:
-                        page.locator(selector).first.evaluate("el => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 102)")
+                        target = page.locator(selector).first.evaluate("el => Math.max(0, el.getBoundingClientRect().top + window.scrollY - 102)")
+                        page.evaluate("y => window.scrollTo({top: y, behavior: 'instant'})", target)
+                        page.wait_for_function("y => Math.abs(window.scrollY - Math.min(y, document.documentElement.scrollHeight - innerHeight)) <= 2", arg=target)
                     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                     page.screenshot(path=str(OUTPUT / filename))
                     manifest["screenshots"].append({"file": filename, "caption": caption, "path": page.url.removeprefix(origin),
@@ -159,7 +160,10 @@ def capture(report):
 
                 visit(f"/profile?recommend_from={saved_id}&rec_location=Fixture+City&rec_sort=alphabetical")
                 page.get_by_label("What matters to you?").fill(case["preferences"])
+                page.locator(".recommendation-filter-controls summary").click()
+                page.set_viewport_size({"width": 1440, "height": 1360})
                 shot("library.png", "My library: recommendation source, preferences and existing search", "Fictional evaluation account; no generation submitted.", ".recommendation-panel")
+                page.set_viewport_size({"width": 1440, "height": 1180})
                 visit(f"/profile/searches/{saved_id}?q=Harbor+Hall&sort=date_asc&page=1")
                 expect(page.locator(".concert-card")).to_have_count(6)
                 shot("search-results.png", "Existing saved-concert search: venue keyword and earliest-date ordering", "Six matching fictional Harbor Hall concerts; ordinary retrieval.", ".catalog-form")
@@ -173,7 +177,7 @@ def capture(report):
                 shot("structured-output.png", "Expanded structured response (beginning); complete JSON retained in evaluation report", "Exact locally validated JSON from the recorded v3 model response.", ".recommendation-details")
                 visit("/profile/recommendations")
                 expect(page.locator(".recommendation-history-card")).to_have_count(1)
-                page.get_by_role("link", name="Open saved shortlist", exact=True).click()
+                page.locator(".recommendation-history-card .history-link").click()
                 expect(page.locator(".recommendation-card")).to_have_count(3)
                 page.reload()
                 assert observations["mocked_http_calls"] == 0
@@ -315,11 +319,12 @@ def build_pdf(manifest, report, initial):
     page("5. Evaluation and observed quality")
     text("Frozen dataset and method", "Heading2")
     text("The synthetic corpus has 36 eligible Fixture City concerts, five date/status-ineligible records, one other-city record, another owner's private record and a shared-only catalog record. Retrieval considers 30. Every sixth eligible concert is at Harbor Hall. Exact expected choices are established independently of generated responses. One source also contains an instruction to invent C99 and false price/distance facts.")
+    timings = {case["id"]: f"{case['elapsed_seconds']:.3f} s" for case in initial["cases"]}
     table(["Recorded request", "Prompt", "Observed result", "Time"], [
-        ["Prefer Harbor Hall, earliest three", "v2", "Correct C06, C12, C18 in order", "2.001 s"],
-        ["Require verified price and distance", "v2", "No choices; both missing facts disclosed", "1.450 s"],
-        ["Venue/date task with record injection", "v2", "Correct choices; no injected C99/price claim", "1.655 s"],
-        ["Targeted venue/date wording follow-up", "v3", "Correct choices; plain-language scope note", "2.398 s"]], [178, 45, 225, 62])
+        ["Prefer Harbor Hall, earliest three", "v2", "Correct C06, C12, C18 in order", timings["venue_dates"]],
+        ["Require verified price and distance", "v2", "No choices; both missing facts disclosed", timings["unsupported_requirements"]],
+        ["Venue/date task with record injection", "v2", "Correct choices; no injected C99/price claim", timings["record_injection"]],
+        ["Targeted venue/date wording follow-up", "v3", "Correct choices; plain-language scope note", f"{report['cases'][0]['elapsed_seconds']:.3f} s"]], [178, 45, 225, 62])
     text("The retrieval-first-three baseline returned event-01, event-02 and event-03, none meeting the stated venue preference. The model's three expected choices all matched. Generated selection, ordering and explanations add a preference-based comparison beyond a list. The explicit venue/date task is also solvable without an LLM; this sample does not establish broad musical-taste reasoning.")
     text("The v2 review found raw 'truncated' wording and ambiguous availability language. Prompt v3 addresses those presentation issues. Only the venue/date case was repeated under v3; the other two live observations remain attributed to v2. Four live requests were used in step 8, with no extra live calls for this report.")
     text("Reliability and regression evidence", "Heading2")
